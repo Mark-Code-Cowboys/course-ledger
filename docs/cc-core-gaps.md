@@ -90,9 +90,11 @@ Fleet adoption debts (next touch of each repo):
 - Course Ledger: RatingStars, FreeTierCounter, parseLooseDate,
   CsvMappingScreen (local copies still in place).
 - Table Encore: RatingStars, FreeTierCounter.
-- cc_template skeleton: journal registration boilerplate, the
-  AppRoot/firstRunSeen first-run gate, RatingStars/FreeTierCounter
-  usage examples — and the repo still needs its GitHub remote.
+- cc_template skeleton: → DONE 2026-09-05 (Fresh Pot's stamp was the
+  template touch): journal registrations + AppDatabase.journal(),
+  AppRoot/firstRunSeen gate, FreeTierCounter placeholder home, the
+  makeTestDb/testApp/disposeApp harness; default ref v0.17.0. The repo
+  still needs its GitHub remote.
 
 Hitch Post's demo-seed device pass (2026-09-05) surfaced zero cc_core
 defects — first fleet app where bring-up + device pass found none.
