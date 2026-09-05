@@ -1,12 +1,25 @@
 import 'package:drift/native.dart';
-import 'package:flutter/widgets.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import 'package:course_ledger/core/theme/app_theme.dart';
 import 'package:course_ledger/data/database/app_database.dart';
+import 'package:course_ledger/data/providers.dart';
 import 'package:course_ledger/data/repositories/course_repository.dart';
 import 'package:course_ledger/data/repositories/round_repository.dart';
+import 'package:course_ledger/features/shell/home_shell.dart';
 
 AppDatabase makeTestDb() => AppDatabase(NativeDatabase.memory());
+
+/// The app wired to an in-memory database; [home] defaults to the shell.
+Widget testApp({required AppDatabase db, Widget? home}) => ProviderScope(
+      overrides: [databaseProvider.overrideWithValue(db)],
+      child: MaterialApp(
+        theme: AppTheme.light(),
+        home: home ?? const HomeShell(),
+      ),
+    );
 
 /// Call at the end of every widget test that renders the app.
 ///

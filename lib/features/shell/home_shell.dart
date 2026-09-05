@@ -1,39 +1,52 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-/// Scaffold-phase shell. The real Home (courses list A-Z / by state /
-/// by recent, count headline, FreeLimit chip) lands in Phase B.
-class HomeShell extends StatelessWidget {
+import '../bucket_list/bucket_list_screen.dart';
+import '../courses/course_composer_screen.dart';
+import '../home/home_screen.dart';
+
+class HomeShell extends ConsumerStatefulWidget {
   const HomeShell({super.key});
 
   @override
+  ConsumerState<HomeShell> createState() => _HomeShellState();
+}
+
+class _HomeShellState extends ConsumerState<HomeShell> {
+  var _index = 0;
+
+  static const _screens = [HomeScreen(), BucketListScreen()];
+
+  @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
     return Scaffold(
-      appBar: AppBar(title: const Text('Course Ledger')),
-      body: Center(
-        child: Padding(
-          padding: const EdgeInsets.all(32),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(Icons.golf_course, size: 64, color: theme.colorScheme.primary),
-              const SizedBox(height: 16),
-              Text(
-                'The book of everywhere you’ve played.',
-                style: theme.textTheme.titleMedium,
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 8),
-              Text(
-                'Not a rangefinder. Not a scorecard.',
-                style: theme.textTheme.bodyMedium?.copyWith(
-                  color: theme.colorScheme.onSurfaceVariant,
+      body: _screens[_index],
+      floatingActionButton: _index == 0
+          ? FloatingActionButton.extended(
+              // Phase C wraps this in the FreeLimit gate.
+              onPressed: () => Navigator.of(context).push(
+                MaterialPageRoute<void>(
+                  builder: (_) => const CourseComposerScreen(),
+                  fullscreenDialog: true,
                 ),
-                textAlign: TextAlign.center,
               ),
-            ],
-          ),
-        ),
+              icon: const Icon(Icons.add),
+              label: const Text('Add course'),
+            )
+          : FloatingActionButton.extended(
+              onPressed: () => showAddBucketItemDialog(context, ref),
+              icon: const Icon(Icons.add),
+              label: const Text('Add a wish'),
+            ),
+      bottomNavigationBar: NavigationBar(
+        selectedIndex: _index,
+        onDestinationSelected: (i) => setState(() => _index = i),
+        destinations: const [
+          NavigationDestination(
+              icon: Icon(Icons.menu_book_outlined), label: 'Courses'),
+          NavigationDestination(
+              icon: Icon(Icons.flag_outlined), label: 'Bucket list'),
+        ],
       ),
     );
   }

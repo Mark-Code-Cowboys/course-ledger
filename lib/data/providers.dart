@@ -22,3 +22,25 @@ final roundRepositoryProvider = Provider<RoundRepository>(
 final bucketListRepositoryProvider = Provider<BucketListRepository>(
   (ref) => BucketListRepository(ref.watch(databaseProvider)),
 );
+
+final courseSummariesProvider = StreamProvider<List<CourseSummary>>(
+  (ref) => ref.watch(courseRepositoryProvider).watchSummaries(),
+);
+
+final courseProvider = StreamProvider.family<Course?, int>(
+  (ref, id) => ref.watch(courseRepositoryProvider).watchCourse(id),
+);
+
+final courseStatsProvider = StreamProvider.family<CourseStats, int>(
+  (ref, id) => ref.watch(courseRepositoryProvider).watchStats(id),
+);
+
+final roundsForCourseProvider =
+    StreamProvider.family<List<RoundWithPhotos>, int>(
+  (ref, courseId) =>
+      ref.watch(roundRepositoryProvider).watchRoundsForCourse(courseId),
+);
+
+final bucketItemsProvider = StreamProvider<List<BucketItem>>(
+  (ref) => ref.watch(bucketListRepositoryProvider).watchItems(),
+);

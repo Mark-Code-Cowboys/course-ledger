@@ -17,6 +17,16 @@ class CourseStats {
   final int? bestScore;
 }
 
+/// One row in the Home courses list: the course plus its play history
+/// roll-up. Sorting (A-Z / by state / by recent) happens on this list.
+class CourseSummary {
+  const CourseSummary(this.course, {required this.roundCount, this.lastPlayed});
+
+  final Course course;
+  final int roundCount;
+  final DateTime? lastPlayed;
+}
+
 /// A course being composed in the add/edit flows, before it has a
 /// database id.
 class CourseDraft {
@@ -58,6 +68,29 @@ class CourseRepository {
     final query = _db.select(_db.courses)
       ..orderBy([(c) => OrderingTerm.asc(c.name.lower())]);
     return query.watch();
+  }
+
+  /// Every course with round count and last-played date, unsorted; the
+  /// Home screen applies the user's sort mode.
+  Stream<List<CourseSummary>> watchSummaries() {
+    final lastPlayed = _db.rounds.date.max();
+    final roundCount = _db.rounds.id.count();
+    final query = _db.select(_db.courses).join([
+      leftOuterJoin(
+        _db.rounds,
+        _db.rounds.courseId.equalsExp(_db.courses.id),
+        useColumns: false,
+      ),
+    ])
+      ..addColumns([lastPlayed, roundCount])
+      ..groupBy([_db.courses.id]);
+    return query.watch().map((rows) => rows
+        .map((row) => CourseSummary(
+              row.readTable(_db.courses),
+              roundCount: row.read(roundCount)!,
+              lastPlayed: row.read(lastPlayed),
+            ))
+        .toList());
   }
 
   Stream<Course?> watchCourse(int id) {
