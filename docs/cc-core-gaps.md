@@ -16,7 +16,7 @@ number format). Empty barrels: `journal/`, `trends/`, `onboarding/`,
 | A | Round notes/photos as journal entries (entry/rating/photo models, Drift repo) | `journal/` | DONE in cc_core 0.12.0 — option B chosen (full core tables, for the coming fleet). Course Ledger is the proving consumer: schema v2 migration moves notes/rating/round_photos into the journal, tested against a real v1 db and verified live on the emulator. Table Encore's adoption is a separate pass (dish-level double ratings + single-photo column need their own design read). |
 | D | Scorecard photo scan → transcribe → confirm | `scan/` | DONE in cc_core 0.8.0 |
 | D | Shoebox batch import (shoot 20 cards → review list → bulk insert) | `notebook_import/` | DONE in cc_core 0.8.0 |
-| E | Courses/yr, rounds/yr, score trend line, counters | `trends/` | DONE in cc_core 0.9.0 (YearlyBars, SimpleLineChart, TrendGate; Trace Elements heatmap extraction still open) |
+| E | Courses/yr, rounds/yr, score trend line, counters | `trends/` | DONE in cc_core 0.9.0; Trace Elements heatmap extraction landed in 0.13.0 (CalendarMonthGrid + TrendWindowNav) — factory Phase 4 fully closed |
 | E | Export/backup archive behind entitlement | `io/` | DONE in cc_core 0.9.0 (backup archive, buildCsv, ShareLauncher seam) |
 | F | First-run flow with positioning line, consent screen | `onboarding/` | DONE in cc_core 0.10.0 (FirstRunFlag + OnboardingScaffold, designed fresh — no donor flow existed) |
 | 0 | Base theme from per-app tokens (`CcThemeTokens`) | `theme/` | DONE in cc_core 0.11.0 — both apps' AppTheme now thin token wrappers |
@@ -45,6 +45,13 @@ number format). Empty barrels: `journal/`, `trends/`, `onboarding/`,
   to try, trails to ride) — flag for review after Phase B proves the shape.
 
 ## Done
+
+- **Trace Elements adoption pass** (cc_core 0.13.0): pin v0.6.1 ->
+  v0.13.0, OCR duplicates shed onto the scan module, and its month
+  grid/window nav extracted into trends (CalendarMonthGrid +
+  TrendWindowNav) — closing the factory's last extraction line item.
+  187 tests, same as baseline. Builds on its own Flutter 3.47.2
+  (codemagic tracks stable; see per-app-flutter-sdks memory).
 
 - **journal/ module** (cc_core 0.12.0, option B): shared entries/photos/
   tags tables with @UseRowClass row types (apps register thin local
