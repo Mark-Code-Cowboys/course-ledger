@@ -13,19 +13,16 @@ number format). Empty barrels: `journal/`, `trends/`, `onboarding/`,
 
 | Phase | Needs | cc_core module | Status |
 | --- | --- | --- | --- |
-| A | Round notes/photos as journal entries (entry/rating/photo models, Drift repo) | `journal/` | empty — and Table Encore has no journal tables to extract either (its notes/photos are domain-table columns), so factory Phase 4 is a design job across both apps. Phase A shipped app-local `rounds.notes` + `round_photos`, shaped like the donor for a later lift. |
+| A | Round notes/photos as journal entries (entry/rating/photo models, Drift repo) | `journal/` | DESIGN PROPOSAL in CC_Core/docs/journal-module-design.md (recommends minimal photo-seam scope, no shipped-app migrations) — awaiting the call |
 | D | Scorecard photo scan → transcribe → confirm | `scan/` | DONE in cc_core 0.8.0 |
 | D | Shoebox batch import (shoot 20 cards → review list → bulk insert) | `notebook_import/` | DONE in cc_core 0.8.0 |
 | E | Courses/yr, rounds/yr, score trend line, counters | `trends/` | DONE in cc_core 0.9.0 (YearlyBars, SimpleLineChart, TrendGate; Trace Elements heatmap extraction still open) |
 | E | Export/backup archive behind entitlement | `io/` | DONE in cc_core 0.9.0 (backup archive, buildCsv, ShareLauncher seam) |
 | F | First-run flow with positioning line, consent screen | `onboarding/` | DONE in cc_core 0.10.0 (FirstRunFlag + OnboardingScaffold, designed fresh — no donor flow existed) |
-| 0 | Base theme from per-app tokens (`CcThemeTokens`) | `theme/` | empty — `lib/core/theme/app_theme.dart` here is a hand copy of Table Encore's `AppTheme` shape; third copy = extract |
+| 0 | Base theme from per-app tokens (`CcThemeTokens`) | `theme/` | DONE in cc_core 0.11.0 — both apps' AppTheme now thin token wrappers |
 
 ## New generic candidates surfaced by this app
 
-- **Count headline** (`trends/` or `text/`): "47 courses · 12 states" —
-  a generic multi-count stat headline formatter/widget for Home screens.
-  (Still app-side in home_screen.dart.)
 - **DEMO_SEED seam**: `--dart-define=DEMO_SEED` screenshot-data hook —
   Table Encore has `SEED_DEV_DATA` ad hoc; Course Ledger now has
   `DEMO_SEED` following the same shape. Worth one blessed name in core
@@ -52,6 +49,15 @@ number format). Empty barrels: `journal/`, `trends/`, `onboarding/`,
   to try, trails to ride) — flag for review after Phase B proves the shape.
 
 ## Done
+
+- **theme/ module + countHeadline** (cc_core 0.11.0): CcThemeTokens with
+  ccLightTheme/ccDarkTheme; countHeadline/CountedSubject in trends.
+  Course Ledger consumes both.
+- **Table Encore shed its duplicates** (adopted cc_core 0.11.0): OCR
+  types/ML Kit services, mergeOcrRows, tally logic (historical key
+  pinned), backup zip (journal.json/photos/ entry names pinned), and
+  the ShareLauncher interface are now shims over core — -244 lines,
+  113 tests unchanged.
 
 - **onboarding/ module** (cc_core 0.10.0, Phase F): FirstRunFlag +
   OnboardingScaffold with the kPrivacyBoilerplate promise. Designed
