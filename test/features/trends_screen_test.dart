@@ -20,7 +20,7 @@ void main() {
 
   Future<void> seed() async {
     final courses = CourseRepository(db);
-    final rounds = RoundRepository(db);
+    final rounds = RoundRepository(db, journal: db.journal());
     final mi = await courses.createCourse(
         courseDraft(name: 'Pine Hollow', state: 'MI'));
     final oh = await courses.createCourse(
@@ -77,7 +77,7 @@ void main() {
     tester.view.devicePixelRatio = 1;
     addTearDown(tester.view.reset);
     final courses = CourseRepository(db);
-    final rounds = RoundRepository(db);
+    final rounds = RoundRepository(db, journal: db.journal());
     final id = await courses.createCourse(courseDraft());
     for (var i = 0; i < 5; i++) {
       await rounds.createRound(id,
@@ -99,7 +99,7 @@ void main() {
 
   test('CSV export includes the joined course and story columns', () async {
     final courses = CourseRepository(db);
-    final rounds = RoundRepository(db);
+    final rounds = RoundRepository(db, journal: db.journal());
     final id = await courses.createCourse(
         courseDraft(name: 'Pine Hollow', state: 'MI'));
     await rounds.createRound(

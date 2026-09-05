@@ -44,7 +44,7 @@ void main() {
   testWidgets('Recent sort puts the last-played course first',
       (tester) async {
     final courses = CourseRepository(db);
-    final rounds = RoundRepository(db);
+    final rounds = RoundRepository(db, journal: db.journal());
     await courses.createCourse(courseDraft(name: 'Alpha', state: 'MI'));
     final recent =
         await courses.createCourse(courseDraft(name: 'Zulu', state: 'MI'));

@@ -18,8 +18,12 @@ void main() {
     expect(rounds, hasLength(40));
     expect(courses.map((c) => c.state).toSet(), {'MI', 'OH', 'NC'});
 
-    // Stories are the point — a healthy share of rounds carry one.
-    expect(rounds.where((r) => r.notes != null).length,
+    // Stories are the point — a healthy share of rounds carry one,
+    // now as journal entries linked from the round.
+    final entries = await db.select(db.appJournalEntries).get();
+    expect(entries.where((e) => e.notes != null).length,
+        greaterThanOrEqualTo(15));
+    expect(rounds.where((r) => r.journalEntryId != null).length,
         greaterThanOrEqualTo(15));
 
     // The bucket list demos the check-off linkage.

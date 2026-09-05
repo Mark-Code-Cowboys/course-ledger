@@ -26,13 +26,28 @@ final courseTallyProvider = Provider<LifetimeTally>((ref) {
   return tally;
 });
 
+/// Overridden in main() with ImagePickerPhotoService over the app's
+/// round_photos directory, and in tests with a fake.
+final photoServiceProvider = Provider<PhotoService>(
+  (ref) => throw UnimplementedError('photoServiceProvider must be overridden'),
+);
+
+/// cc_core's journal repository over this database's generated tables.
+final journalRepositoryProvider = Provider<AppJournalRepository>(
+  (ref) => ref
+      .watch(databaseProvider)
+      .journal(photoStore: ref.watch(photoServiceProvider)),
+);
+
 final courseRepositoryProvider = Provider<CourseRepository>(
   (ref) => CourseRepository(ref.watch(databaseProvider),
-      tally: ref.watch(courseTallyProvider)),
+      tally: ref.watch(courseTallyProvider),
+      journal: ref.watch(journalRepositoryProvider)),
 );
 
 final roundRepositoryProvider = Provider<RoundRepository>(
-  (ref) => RoundRepository(ref.watch(databaseProvider)),
+  (ref) => RoundRepository(ref.watch(databaseProvider),
+      journal: ref.watch(journalRepositoryProvider)),
 );
 
 final bucketListRepositoryProvider = Provider<BucketListRepository>(
@@ -52,7 +67,7 @@ final courseStatsProvider = StreamProvider.family<CourseStats, int>(
 );
 
 final roundsForCourseProvider =
-    StreamProvider.family<List<RoundWithPhotos>, int>(
+    StreamProvider.family<List<RoundWithStory>, int>(
   (ref, courseId) =>
       ref.watch(roundRepositoryProvider).watchRoundsForCourse(courseId),
 );

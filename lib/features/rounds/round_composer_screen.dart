@@ -1,3 +1,4 @@
+import 'package:cc_core/cc_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -30,6 +31,7 @@ class _RoundComposerScreenState extends ConsumerState<RoundComposerScreen> {
   var _holesPlayed = HolesPlayed.eighteen;
   WalkedOrCart? _walkedOrCart;
   int? _rating;
+  final _photos = <JournalPhotoDraft>[];
   var _saving = false;
 
   @override
@@ -38,6 +40,34 @@ class _RoundComposerScreenState extends ConsumerState<RoundComposerScreen> {
       c.dispose();
     }
     super.dispose();
+  }
+
+  Future<void> _addPhoto() async {
+    final source = await showModalBottomSheet<PhotoSource>(
+      context: context,
+      builder: (context) => SafeArea(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ListTile(
+              leading: const Icon(Icons.photo_camera_outlined),
+              title: const Text('Take a photo'),
+              onTap: () => Navigator.of(context).pop(PhotoSource.camera),
+            ),
+            ListTile(
+              leading: const Icon(Icons.photo_library_outlined),
+              title: const Text('Pick from gallery'),
+              onTap: () => Navigator.of(context).pop(PhotoSource.gallery),
+            ),
+          ],
+        ),
+      ),
+    );
+    if (source == null) return;
+    final path = await ref.read(photoServiceProvider).acquire(source);
+    if (path != null && mounted) {
+      setState(() => _photos.add(JournalPhotoDraft(path: path)));
+    }
   }
 
   Future<void> _pickDate() async {
@@ -63,6 +93,7 @@ class _RoundComposerScreenState extends ConsumerState<RoundComposerScreen> {
       weather: _weather.text.trim().isEmpty ? null : _weather.text.trim(),
       rating: _rating,
       notes: _story.text.trim().isEmpty ? null : _story.text.trim(),
+      photos: List.of(_photos),
     );
     final roundId = await ref
         .read(roundRepositoryProvider)
@@ -141,6 +172,19 @@ class _RoundComposerScreenState extends ConsumerState<RoundComposerScreen> {
             ),
             maxLines: 6,
             textCapitalization: TextCapitalization.sentences,
+          ),
+          const SizedBox(height: 12),
+          // The card, the view from 18 — photos ride with the story.
+          PhotoAttachmentStrip(
+            items: [
+              for (final p in _photos)
+                PhotoStripItem(
+                  file: ref.read(photoServiceProvider).fileFor(p.path),
+                  caption: p.caption,
+                  onRemove: () => setState(() => _photos.remove(p)),
+                ),
+            ],
+            onAdd: _addPhoto,
           ),
           const SizedBox(height: 24),
           Text('Details', style: theme.textTheme.titleSmall),

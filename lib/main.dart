@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:cc_core/cc_core.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -14,6 +16,9 @@ import 'features/scan_import/scan_import_providers.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   final db = AppDatabase.open();
+  final documents = await getApplicationDocumentsDirectory();
+  final photosDir =
+      await Directory('${documents.path}/round_photos').create(recursive: true);
 
   // Screenshot data: `flutter run --dart-define=DEMO_SEED=true`.
   // Demo builds also fake Pro so the counter stays out of shots and the
@@ -33,6 +38,8 @@ Future<void> main() async {
         textRecognitionServiceProvider
             .overrideWithValue(MlKitTextRecognitionService()),
         shareLauncherProvider.overrideWithValue(SharePlusLauncher()),
+        photoServiceProvider.overrideWithValue(
+            ImagePickerPhotoService(photosDir, filePrefix: 'round')),
         tempDirProvider.overrideWithValue(getTemporaryDirectory),
         if (demo)
           entitlementServiceProvider

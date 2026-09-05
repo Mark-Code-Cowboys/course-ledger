@@ -16,7 +16,7 @@ void main() {
     final source = makeTestDb();
     addTearDown(source.close);
     final courses = CourseRepository(source);
-    final rounds = RoundRepository(source);
+    final rounds = RoundRepository(source, journal: source.journal());
     final bucket = BucketListRepository(source);
 
     final pineId = await courses.createCourse(courseDraft(
@@ -29,7 +29,7 @@ void main() {
         totalScore: 92,
         partners: 'Sam',
         notes: 'Birdie on 17.',
-        photos: const [RoundPhotoDraft(path: 'cards/1.jpg', caption: 'card')],
+        photos: const [JournalPhotoDraft(path: 'cards/1.jpg', caption: 'card')],
       ),
     );
     final item = await bucket.addCourseItem(pineId);
@@ -86,28 +86,27 @@ void main() {
     );
   });
 
-  test('collectRoundPhotoMedia skips photo rows whose file is gone',
-      () async {
+  test('collectMedia skips photo rows whose file is gone', () async {
     final db = makeTestDb();
     addTearDown(db.close);
     final courses = CourseRepository(db);
-    final rounds = RoundRepository(db);
+    final rounds = RoundRepository(db, journal: db.journal());
     final courseId = await courses.createCourse(courseDraft());
 
     final dir = await Directory.systemTemp.createTemp('cl-backup-test');
     addTearDown(() => dir.delete(recursive: true));
-    final real = File('${dir.path}/real.jpg');
-    await real.writeAsBytes([9, 9, 9]);
+    final store = ImagePickerPhotoService(dir, filePrefix: 'round');
+    await store.importBytes('real.jpg', [9, 9, 9]);
 
     await rounds.createRound(
       courseId,
-      roundDraft(photos: [
-        RoundPhotoDraft(path: real.path),
-        const RoundPhotoDraft(path: '/nowhere/gone.jpg'),
+      roundDraft(photos: const [
+        JournalPhotoDraft(path: 'real.jpg'),
+        JournalPhotoDraft(path: 'gone.jpg'),
       ]),
     );
 
-    final media = await collectRoundPhotoMedia(db);
+    final media = await db.journal().collectMedia(store);
     expect(media.keys, ['real.jpg']);
     expect(media['real.jpg'], [9, 9, 9]);
   });

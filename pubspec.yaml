@@ -12,7 +12,7 @@ dependencies:
   cc_core:
     git:
       url: https://github.com/Mark-Code-Cowboys/cc_core.git
-      ref: v0.11.0
+      ref: v0.12.0
   drift: ^2.34.3
   drift_flutter: ^0.3.1
   # CSV pick for the import mapper (SAF/native dialogs, no permissions).
@@ -31,6 +31,7 @@ dev_dependencies:
   build_runner: ^2.15.1
   drift_dev: ^2.34.0
   flutter_launcher_icons: ^0.14.4
+  sqlite3: ^3.5.2
   flutter_lints: ^6.0.0
   flutter_test:
     sdk: flutter

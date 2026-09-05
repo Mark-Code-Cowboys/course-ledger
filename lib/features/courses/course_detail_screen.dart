@@ -178,7 +178,7 @@ class CourseDetailScreen extends ConsumerWidget {
 class _RoundTile extends StatelessWidget {
   const _RoundTile({required this.entry});
 
-  final RoundWithPhotos entry;
+  final RoundWithStory entry;
 
   @override
   Widget build(BuildContext context) {
@@ -192,7 +192,7 @@ class _RoundTile extends StatelessWidget {
       if (round.weather != null) round.weather,
     ].join(' · ');
     return ListTile(
-      isThreeLine: round.notes != null,
+      isThreeLine: entry.notes != null,
       leading: CircleAvatar(
         child: Text(round.totalScore?.toString() ?? '—'),
       ),
@@ -201,9 +201,9 @@ class _RoundTile extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(details),
-          if (round.notes != null)
+          if (entry.notes != null)
             Text(
-              round.notes!,
+              entry.notes!,
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
               style: theme.textTheme.bodySmall?.copyWith(
@@ -213,9 +213,9 @@ class _RoundTile extends StatelessWidget {
             ),
         ],
       ),
-      trailing: round.rating == null
+      trailing: entry.rating == null
           ? null
-          : RatingStars(rating: round.rating, size: 14),
+          : RatingStars(rating: entry.rating, size: 14),
     );
   }
 }

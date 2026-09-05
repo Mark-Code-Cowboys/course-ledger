@@ -1,3 +1,4 @@
+import 'package:cc_core/cc_core.dart';
 import 'package:drift/drift.dart';
 
 import 'app_database.dart';
@@ -31,6 +32,7 @@ Future<void> seedDemoData(AppDatabase db) async {
             rating: Value(rating),
           ));
 
+  final journal = db.journal();
   Future<int> round(
     int courseId,
     DateTime date, {
@@ -40,17 +42,22 @@ Future<void> seedDemoData(AppDatabase db) async {
     int? rating,
     String? story,
     HolesPlayed holes = HolesPlayed.eighteen,
-  }) =>
-      db.into(db.rounds).insert(RoundsCompanion.insert(
-            courseId: courseId,
-            date: date,
-            totalScore: Value(score),
-            holesPlayed: holes,
-            partners: Value(partners),
-            weather: Value(weather),
-            rating: Value(rating),
-            notes: Value(story),
-          ));
+  }) async {
+    int? entryId;
+    if (story != null || rating != null) {
+      entryId = await journal
+          .createEntry(JournalEntryDraft(notes: story, rating: rating));
+    }
+    return db.into(db.rounds).insert(RoundsCompanion.insert(
+          courseId: courseId,
+          date: date,
+          totalScore: Value(score),
+          holesPlayed: holes,
+          partners: Value(partners),
+          weather: Value(weather),
+          journalEntryId: Value(entryId),
+        ));
+  }
 
   // --- Michigan (home turf) ---
   final pine = await course('Pine Hollow Golf Club', 'Lansing', 'MI',

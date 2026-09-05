@@ -22,6 +22,7 @@ void main() {
   Widget rootApp(KeyValueStore store) => ProviderScope(
         overrides: [
           databaseProvider.overrideWithValue(db),
+          photoServiceProvider.overrideWithValue(FakeAppPhotoService()),
           kvStoreProvider.overrideWithValue(store),
           entitlementServiceProvider
               .overrideWithValue(FakeEntitlementService()),

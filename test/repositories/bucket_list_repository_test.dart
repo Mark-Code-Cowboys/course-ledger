@@ -49,7 +49,7 @@ void main() {
     final freeItem = await repo.addFreeTextItem('Bandon Dunes someday');
 
     final roundId =
-        await RoundRepository(db).createRound(target, roundDraft());
+        await RoundRepository(db, journal: db.journal()).createRound(target, roundDraft());
     final checked = await repo.completeItemsForCourse(target, roundId);
 
     expect(checked, 1);
@@ -65,7 +65,7 @@ void main() {
       'original round', () async {
     final courseId = await CourseRepository(db).createCourse(courseDraft());
     final item = await repo.addCourseItem(courseId);
-    final rounds = RoundRepository(db);
+    final rounds = RoundRepository(db, journal: db.journal());
 
     final firstRound = await rounds.createRound(courseId, roundDraft());
     await repo.completeItemsForCourse(courseId, firstRound);
@@ -82,7 +82,7 @@ void main() {
     final courseId = await CourseRepository(db).createCourse(courseDraft());
     final item = await repo.addCourseItem(courseId);
     final roundId =
-        await RoundRepository(db).createRound(courseId, roundDraft());
+        await RoundRepository(db, journal: db.journal()).createRound(courseId, roundDraft());
     await repo.markDone(item, roundId: roundId);
 
     await repo.markOpen(item);
@@ -108,7 +108,7 @@ void main() {
     final courses = CourseRepository(db);
     final courseId = await courses.createCourse(courseDraft());
     final item = await repo.addCourseItem(courseId);
-    final rounds = RoundRepository(db);
+    final rounds = RoundRepository(db, journal: db.journal());
     final roundId = await rounds.createRound(courseId, roundDraft());
     await repo.markDone(item, roundId: roundId);
 

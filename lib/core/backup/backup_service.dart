@@ -1,12 +1,10 @@
-import 'dart:io';
-
 import 'package:cc_core/cc_core.dart';
 import 'package:drift/drift.dart';
 
 import '../../data/database/app_database.dart';
 
-/// The whole ledger as a JSON-encodable map (format 1). Pure data —
-/// round photos are referenced by path but not embedded; the backup
+/// The whole ledger as a JSON-encodable map (format 2: journal tables).
+/// Pure data — photo files are referenced by store name; the backup
 /// archive carries their bytes separately.
 Future<Map<String, Object?>> buildExportData(
   AppDatabase db, {
@@ -19,7 +17,13 @@ Future<Map<String, Object?>> buildExportData(
   final rounds = await (db.select(db.rounds)
         ..orderBy([(t) => OrderingTerm.asc(t.id)]))
       .get();
-  final photos = await (db.select(db.roundPhotos)
+  final entries = await (db.select(db.appJournalEntries)
+        ..orderBy([(t) => OrderingTerm.asc(t.id)]))
+      .get();
+  final photos = await (db.select(db.appJournalPhotos)
+        ..orderBy([(t) => OrderingTerm.asc(t.id)]))
+      .get();
+  final tags = await (db.select(db.appJournalTags)
         ..orderBy([(t) => OrderingTerm.asc(t.id)]))
       .get();
   final bucket = await (db.select(db.bucketList)
@@ -28,7 +32,7 @@ Future<Map<String, Object?>> buildExportData(
 
   return {
     'app': 'CourseLedger',
-    'format': 1,
+    'format': 2,
     'exportedAt': (now ?? DateTime.now()).toIso8601String(),
     // Carried so a restore never resets the free tier (raiseTo).
     'lifetimeCourses': lifetimeCourses,
@@ -62,18 +66,30 @@ Future<Map<String, Object?>> buildExportData(
           'walkedOrCart': r.walkedOrCart?.name,
           'partners': r.partners,
           'weather': r.weather,
-          'rating': r.rating,
-          'notes': r.notes,
+          'journalEntryId': r.journalEntryId,
         },
     ],
-    'roundPhotos': [
+    'journalEntries': [
+      for (final e in entries)
+        {
+          'id': e.id,
+          'notes': e.notes,
+          'rating': e.rating,
+          'createdAt': e.createdAt.toIso8601String(),
+        },
+    ],
+    'journalPhotos': [
       for (final p in photos)
         {
           'id': p.id,
-          'roundId': p.roundId,
+          'entryId': p.entryId,
           'path': p.path,
           'caption': p.caption,
         },
+    ],
+    'journalTags': [
+      for (final t in tags)
+        {'id': t.id, 'entryId': t.entryId, 'tag': t.tag},
     ],
     'bucketList': [
       for (final b in bucket)
@@ -88,50 +104,67 @@ Future<Map<String, Object?>> buildExportData(
   };
 }
 
-/// Photo files referenced by rounds, keyed by base name, for the backup
-/// archive's media folder. Missing files are skipped — the JSON keeps
-/// the reference either way.
-Future<Map<String, List<int>>> collectRoundPhotoMedia(AppDatabase db) async {
-  final photos = await db.select(db.roundPhotos).get();
-  final media = <String, List<int>>{};
-  for (final p in photos) {
-    final file = File(p.path);
-    if (await file.exists()) {
-      media[file.uri.pathSegments.last] = await file.readAsBytes();
-    }
-  }
-  return media;
-}
-
-/// Replaces the entire ledger with the contents of an export (format 1,
-/// as produced by [buildExportData]). Runs in one transaction: either
-/// the whole backup lands or nothing changes. Ids are preserved so
-/// photo and bucket references stay stable.
+/// Replaces the entire ledger with the contents of an export. Accepts
+/// format 2 and format 1 (pre-journal backups: rounds carried
+/// notes/rating and a roundPhotos array — they become journal rows).
+/// Runs in one transaction; ids are preserved.
 ///
 /// Returns the backup's lifetime-courses figure so the caller can
 /// `raiseTo` the tally (never lowered).
 Future<int> restoreFromExportData(
     AppDatabase db, Map<String, Object?> data) async {
-  if (data['app'] != 'CourseLedger' || data['format'] != 1) {
+  if (data['app'] != 'CourseLedger' ||
+      (data['format'] != 1 && data['format'] != 2)) {
     throw const InvalidBackupException('Unrecognized export format');
   }
-  final courses = data['courses'];
-  final rounds = data['rounds'];
-  final photos = data['roundPhotos'];
-  final bucket = data['bucketList'];
+  final upgraded =
+      data['format'] == 1 ? _upgradeFormat1(data) : data;
+
+  final courses = upgraded['courses'];
+  final rounds = upgraded['rounds'];
+  final entries = upgraded['journalEntries'];
+  final photos = upgraded['journalPhotos'];
+  final tags = upgraded['journalTags'];
+  final bucket = upgraded['bucketList'];
   if (courses is! List ||
       rounds is! List ||
+      entries is! List ||
       photos is! List ||
+      tags is! List ||
       bucket is! List) {
     throw const InvalidBackupException('Malformed export tables');
   }
 
   await db.transaction(() async {
-    // Rounds, photos and bucket rows cascade away with their courses;
-    // free-text bucket rows are deleted explicitly.
     await db.delete(db.bucketList).go();
     await db.delete(db.courses).go();
+    await db.delete(db.appJournalEntries).go();
 
+    for (final row in entries.cast<Map<String, dynamic>>()) {
+      await db.into(db.appJournalEntries).insert(RawValuesInsertable({
+            'id': Variable(row['id'] as int),
+            'notes': Variable(row['notes'] as String?),
+            'rating': Variable(row['rating'] as int?),
+            if (row['createdAt'] != null)
+              'created_at':
+                  Variable(DateTime.parse(row['createdAt'] as String)),
+          }));
+    }
+    for (final row in photos.cast<Map<String, dynamic>>()) {
+      await db.into(db.appJournalPhotos).insert(RawValuesInsertable({
+            'id': Variable(row['id'] as int),
+            'entry_id': Variable(row['entryId'] as int),
+            'path': Variable(row['path'] as String),
+            'caption': Variable(row['caption'] as String?),
+          }));
+    }
+    for (final row in tags.cast<Map<String, dynamic>>()) {
+      await db.into(db.appJournalTags).insert(RawValuesInsertable({
+            'id': Variable(row['id'] as int),
+            'entry_id': Variable(row['entryId'] as int),
+            'tag': Variable(row['tag'] as String),
+          }));
+    }
     for (final row in courses.cast<Map<String, dynamic>>()) {
       await db.into(db.courses).insert(CoursesCompanion(
             id: Value(row['id'] as int),
@@ -164,16 +197,7 @@ Future<int> restoreFromExportData(
             }),
             partners: Value(row['partners'] as String),
             weather: Value(row['weather'] as String?),
-            rating: Value(row['rating'] as int?),
-            notes: Value(row['notes'] as String?),
-          ));
-    }
-    for (final row in photos.cast<Map<String, dynamic>>()) {
-      await db.into(db.roundPhotos).insert(RoundPhotosCompanion(
-            id: Value(row['id'] as int),
-            roundId: Value(row['roundId'] as int),
-            path: Value(row['path'] as String),
-            caption: Value(row['caption'] as String?),
+            journalEntryId: Value(row['journalEntryId'] as int?),
           ));
     }
     for (final row in bucket.cast<Map<String, dynamic>>()) {
@@ -186,5 +210,56 @@ Future<int> restoreFromExportData(
           ));
     }
   });
-  return (data['lifetimeCourses'] as num?)?.toInt() ?? courses.length;
+  return (upgraded['lifetimeCourses'] as num?)?.toInt() ?? courses.length;
+}
+
+/// Maps a pre-journal (format 1) export into the format-2 shape:
+/// rounds' notes/rating become entries; roundPhotos become
+/// journalPhotos on those entries.
+Map<String, Object?> _upgradeFormat1(Map<String, Object?> data) {
+  final rounds =
+      (data['rounds'] as List? ?? const []).cast<Map<String, dynamic>>();
+  final oldPhotos =
+      (data['roundPhotos'] as List? ?? const []).cast<Map<String, dynamic>>();
+
+  final entries = <Map<String, Object?>>[];
+  final photos = <Map<String, Object?>>[];
+  final newRounds = <Map<String, Object?>>[];
+  var nextEntry = 1;
+  var nextPhoto = 1;
+  for (final r in rounds) {
+    final roundPhotos =
+        oldPhotos.where((p) => p['roundId'] == r['id']).toList();
+    int? entryId;
+    if (r['notes'] != null || r['rating'] != null || roundPhotos.isNotEmpty) {
+      entryId = nextEntry++;
+      entries.add({
+        'id': entryId,
+        'notes': r['notes'],
+        'rating': r['rating'],
+        'createdAt': null,
+      });
+      for (final p in roundPhotos) {
+        photos.add({
+          'id': nextPhoto++,
+          'entryId': entryId,
+          // Format 1 stored arbitrary paths; keep the base name so the
+          // photo store can resolve restored media.
+          'path': (p['path'] as String).split('/').last,
+          'caption': p['caption'],
+        });
+      }
+    }
+    newRounds.add({...r, 'journalEntryId': entryId}
+      ..remove('notes')
+      ..remove('rating'));
+  }
+  return {
+    ...data,
+    'format': 2,
+    'rounds': newRounds,
+    'journalEntries': entries,
+    'journalPhotos': photos,
+    'journalTags': const <Object?>[],
+  };
 }

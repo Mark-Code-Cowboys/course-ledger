@@ -34,7 +34,7 @@ void main() {
 
   testWidgets('played course shows first/last/best and the story preview',
       (tester) async {
-    final rounds = RoundRepository(db);
+    final rounds = RoundRepository(db, journal: db.journal());
     await rounds.createRound(
       courseId,
       roundDraft(

@@ -195,6 +195,7 @@ class _TrendsContent extends ConsumerWidget {
         ref.read(databaseProvider),
         ref.read(shareLauncherProvider),
         ref.read(tempDirProvider),
+        photos: ref.read(photoServiceProvider),
       );
 
   Future<void> _shareCsv(BuildContext context, WidgetRef ref) async {
@@ -267,6 +268,11 @@ Future<void> restoreBackupFlow(BuildContext context, WidgetRef ref) async {
     final contents = readBackupArchive(await File(picked.path).readAsBytes());
     final lifetime = await restoreFromExportData(
         ref.read(databaseProvider), contents.exportData);
+    // Photo files ride along in the archive; put them back in the store.
+    final store = ref.read(photoServiceProvider);
+    for (final entry in contents.media.entries) {
+      await store.importBytes(entry.key, entry.value);
+    }
     await ref.read(courseTallyProvider).raiseTo(lifetime);
     messenger.showSnackBar(
         const SnackBar(content: Text('Backup restored.')));

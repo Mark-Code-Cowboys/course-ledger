@@ -1,3 +1,4 @@
+import 'package:cc_core/cc_core.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:course_ledger/data/database/app_database.dart';
@@ -13,7 +14,7 @@ void main() {
 
   setUp(() async {
     db = makeTestDb();
-    repo = RoundRepository(db);
+    repo = RoundRepository(db, journal: db.journal());
     courseId = await CourseRepository(db).createCourse(courseDraft());
   });
 
@@ -27,8 +28,8 @@ void main() {
         partners: 'Sam, Dale',
         notes: 'Birdie on 17 into the wind.',
         photos: const [
-          RoundPhotoDraft(path: 'cards/0001.jpg', caption: 'the card'),
-          RoundPhotoDraft(path: 'views/0001.jpg', caption: 'view from 18'),
+          JournalPhotoDraft(path: 'cards/0001.jpg', caption: 'the card'),
+          JournalPhotoDraft(path: 'views/0001.jpg', caption: 'view from 18'),
         ],
       ),
     );
@@ -37,7 +38,7 @@ void main() {
     expect(stored?.round.totalScore, 91);
     expect(stored?.round.partners, 'Sam, Dale');
     expect(stored?.round.holesPlayed, HolesPlayed.eighteen);
-    expect(stored?.round.notes, 'Birdie on 17 into the wind.');
+    expect(stored?.notes, 'Birdie on 17 into the wind.');
     expect(stored?.photos.map((p) => p.caption),
         ['the card', 'view from 18']);
   });
@@ -48,7 +49,7 @@ void main() {
       courseId,
       roundDraft(
         date: DateTime(2026, 9, 1),
-        photos: const [RoundPhotoDraft(path: 'p.jpg')],
+        photos: const [JournalPhotoDraft(path: 'p.jpg')],
       ),
     );
 
@@ -82,13 +83,13 @@ void main() {
   test('deleteRound cascades its photo rows', () async {
     final roundId = await repo.createRound(
       courseId,
-      roundDraft(photos: const [RoundPhotoDraft(path: 'p.jpg')]),
+      roundDraft(photos: const [JournalPhotoDraft(path: 'p.jpg')]),
     );
 
     await repo.deleteRound(roundId);
 
     expect(await repo.watchRound(roundId).first, isNull);
-    expect(await db.select(db.roundPhotos).get(), isEmpty);
+    expect(await db.select(db.appJournalPhotos).get(), isEmpty);
   });
 
   test('addPhoto and deletePhoto manage attachments one at a time',
@@ -96,10 +97,10 @@ void main() {
     final roundId = await repo.createRound(courseId, roundDraft());
 
     final photoId =
-        await repo.addPhoto(roundId, const RoundPhotoDraft(path: 'p.jpg'));
+        await repo.addPhoto(roundId, const JournalPhotoDraft(path: 'p.jpg'));
     expect((await repo.watchRound(roundId).first)?.photos, hasLength(1));
 
-    await repo.deletePhoto(photoId);
+    await repo.removePhoto(photoId);
     expect((await repo.watchRound(roundId).first)?.photos, isEmpty);
   });
 }

@@ -26,7 +26,7 @@ void main() {
           {bool entitled = true}) =>
       importCsvRounds(
         courses: courses,
-        rounds: RoundRepository(db),
+        rounds: RoundRepository(db, journal: db.journal()),
         bucketList: BucketListRepository(db),
         doc: doc,
         mapping: mapping,
@@ -61,7 +61,8 @@ void main() {
     expect(await courses.count(), 2); // case-insensitive match reused
     final rounds = await db.select(db.rounds).get();
     expect(rounds.map((r) => r.totalScore), containsAll([92, 88, 90]));
-    expect(rounds.where((r) => r.notes == 'windy'), hasLength(1));
+    final entries = await db.select(db.appJournalEntries).get();
+    expect(entries.where((e) => e.notes == 'windy'), hasLength(1));
   });
 
   test('free users import into existing courses but not past the cap',

@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:drift/native.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -15,6 +17,32 @@ import 'package:course_ledger/features/shell/home_shell.dart';
 
 AppDatabase makeTestDb() => AppDatabase(NativeDatabase.memory());
 
+/// Plugin-free photo service: files "live" in an in-memory map; fileFor
+/// points into a nonexistent directory (thumbnails use errorBuilder).
+class FakeAppPhotoService implements PhotoService {
+  final imported = <String, List<int>>{};
+  final discarded = <String>[];
+
+  @override
+  Future<String?> acquire(PhotoSource source) async => null;
+
+  @override
+  Future<String?> acquireTransient(PhotoSource source) async => null;
+
+  @override
+  File fileFor(String photoPath) => File('/cl-test-photos/$photoPath');
+
+  @override
+  Future<void> importBytes(String photoPath, List<int> bytes) async {
+    imported[photoPath] = bytes;
+  }
+
+  @override
+  Future<void> discard(String photoPath) async {
+    discarded.add(photoPath);
+  }
+}
+
 /// The app wired to an in-memory database and fake services; [home]
 /// defaults to the shell and [entitlements] to a free-tier user.
 Widget testApp({
@@ -22,11 +50,13 @@ Widget testApp({
   EntitlementService? entitlements,
   DocumentScanService? scanner,
   TextRecognitionService? recognizer,
+  PhotoService? photos,
   Widget? home,
 }) =>
     ProviderScope(
       overrides: [
         databaseProvider.overrideWithValue(db),
+        photoServiceProvider.overrideWithValue(photos ?? FakeAppPhotoService()),
         kvStoreProvider.overrideWithValue(InMemoryKeyValueStore()),
         entitlementServiceProvider
             .overrideWithValue(entitlements ?? FakeEntitlementService()),
@@ -75,7 +105,7 @@ RoundDraft roundDraft({
   HolesPlayed holesPlayed = HolesPlayed.eighteen,
   String partners = '',
   String? notes,
-  List<RoundPhotoDraft> photos = const [],
+  List<JournalPhotoDraft> photos = const [],
 }) =>
     RoundDraft(
       date: date ?? DateTime(2026, 6, 15),

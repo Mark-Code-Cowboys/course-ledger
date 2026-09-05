@@ -62,11 +62,14 @@ class CourseDraft {
 }
 
 class CourseRepository {
-  CourseRepository(this._db, {LifetimeTally? tally})
-      : _tally = tally; // ignore: prefer_initializing_formals
+  CourseRepository(this._db,
+      {LifetimeTally? tally, AppJournalRepository? journal})
+      : _tally = tally, // ignore: prefer_initializing_formals
+        _journal = journal; // ignore: prefer_initializing_formals
 
   final AppDatabase _db;
   final LifetimeTally? _tally;
+  final AppJournalRepository? _journal;
 
   /// All courses A-Z; by-state and by-recent orderings come with the
   /// Home screen (Phase B).
@@ -159,9 +162,18 @@ class CourseRepository {
         .write(_companion(d));
   }
 
-  /// Rounds (and their photo rows) and bucket-list references cascade.
-  Future<void> deleteCourse(int id) {
-    return (_db.delete(_db.courses)..where((c) => c.id.equals(id))).go();
+  /// Rounds and bucket-list references cascade with the course; the
+  /// rounds' journal entries (and photo files) are deleted explicitly
+  /// since the FK points domain -> entry.
+  Future<void> deleteCourse(int id) async {
+    final entryId = _db.rounds.journalEntryId;
+    final query = _db.selectOnly(_db.rounds)
+      ..addColumns([entryId])
+      ..where(_db.rounds.courseId.equals(id) & entryId.isNotNull());
+    final entryIds =
+        (await query.get()).map((r) => r.read(entryId)!).toList();
+    await (_db.delete(_db.courses)..where((c) => c.id.equals(id))).go();
+    if (entryIds.isNotEmpty) await _journal?.deleteEntries(entryIds);
   }
 
   CoursesCompanion _companion(CourseDraft d) => CoursesCompanion.insert(

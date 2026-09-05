@@ -735,6 +735,200 @@ class CoursesCompanion extends UpdateCompanion<Course> {
   }
 }
 
+class $AppJournalEntriesTable extends AppJournalEntries
+    with TableInfo<$AppJournalEntriesTable, JournalEntry> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $AppJournalEntriesTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+    'id',
+    aliasedName,
+    false,
+    hasAutoIncrement: true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'PRIMARY KEY AUTOINCREMENT',
+    ),
+  );
+  static const VerificationMeta _notesMeta = const VerificationMeta('notes');
+  @override
+  late final GeneratedColumn<String> notes = GeneratedColumn<String>(
+    'notes',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _ratingMeta = const VerificationMeta('rating');
+  @override
+  late final GeneratedColumn<int> rating = GeneratedColumn<int>(
+    'rating',
+    aliasedName,
+    true,
+    check: () => ComparableExpr(rating).isBetweenValues(1, 5),
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _createdAtMeta = const VerificationMeta(
+    'createdAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
+    'created_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+    defaultValue: currentDateAndTime,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [id, notes, rating, createdAt];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'journal_entries';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<JournalEntry> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('notes')) {
+      context.handle(
+        _notesMeta,
+        notes.isAcceptableOrUnknown(data['notes']!, _notesMeta),
+      );
+    }
+    if (data.containsKey('rating')) {
+      context.handle(
+        _ratingMeta,
+        rating.isAcceptableOrUnknown(data['rating']!, _ratingMeta),
+      );
+    }
+    if (data.containsKey('created_at')) {
+      context.handle(
+        _createdAtMeta,
+        createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  JournalEntry map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return JournalEntry(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}id'],
+      )!,
+      notes: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}notes'],
+      ),
+      rating: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}rating'],
+      ),
+      createdAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}created_at'],
+      )!,
+    );
+  }
+
+  @override
+  $AppJournalEntriesTable createAlias(String alias) {
+    return $AppJournalEntriesTable(attachedDatabase, alias);
+  }
+}
+
+class AppJournalEntriesCompanion extends UpdateCompanion<JournalEntry> {
+  final Value<int> id;
+  final Value<String?> notes;
+  final Value<int?> rating;
+  final Value<DateTime> createdAt;
+  const AppJournalEntriesCompanion({
+    this.id = const Value.absent(),
+    this.notes = const Value.absent(),
+    this.rating = const Value.absent(),
+    this.createdAt = const Value.absent(),
+  });
+  AppJournalEntriesCompanion.insert({
+    this.id = const Value.absent(),
+    this.notes = const Value.absent(),
+    this.rating = const Value.absent(),
+    this.createdAt = const Value.absent(),
+  });
+  static Insertable<JournalEntry> custom({
+    Expression<int>? id,
+    Expression<String>? notes,
+    Expression<int>? rating,
+    Expression<DateTime>? createdAt,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (notes != null) 'notes': notes,
+      if (rating != null) 'rating': rating,
+      if (createdAt != null) 'created_at': createdAt,
+    });
+  }
+
+  AppJournalEntriesCompanion copyWith({
+    Value<int>? id,
+    Value<String?>? notes,
+    Value<int?>? rating,
+    Value<DateTime>? createdAt,
+  }) {
+    return AppJournalEntriesCompanion(
+      id: id ?? this.id,
+      notes: notes ?? this.notes,
+      rating: rating ?? this.rating,
+      createdAt: createdAt ?? this.createdAt,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (notes.present) {
+      map['notes'] = Variable<String>(notes.value);
+    }
+    if (rating.present) {
+      map['rating'] = Variable<int>(rating.value);
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<DateTime>(createdAt.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('AppJournalEntriesCompanion(')
+          ..write('id: $id, ')
+          ..write('notes: $notes, ')
+          ..write('rating: $rating, ')
+          ..write('createdAt: $createdAt')
+          ..write(')'))
+        .toString();
+  }
+}
+
 class $RoundsTable extends Rounds with TableInfo<$RoundsTable, Round> {
   @override
   final GeneratedDatabase attachedDatabase;
@@ -837,23 +1031,15 @@ class $RoundsTable extends Rounds with TableInfo<$RoundsTable, Round> {
     type: DriftSqlType.string,
     requiredDuringInsert: false,
   );
-  static const VerificationMeta _ratingMeta = const VerificationMeta('rating');
-  @override
-  late final GeneratedColumn<int> rating = GeneratedColumn<int>(
-    'rating',
-    aliasedName,
-    true,
-    check: () => ComparableExpr(rating).isBetweenValues(1, 5),
-    type: DriftSqlType.int,
-    requiredDuringInsert: false,
+  static const VerificationMeta _journalEntryIdMeta = const VerificationMeta(
+    'journalEntryId',
   );
-  static const VerificationMeta _notesMeta = const VerificationMeta('notes');
   @override
-  late final GeneratedColumn<String> notes = GeneratedColumn<String>(
-    'notes',
+  late final GeneratedColumn<int> journalEntryId = GeneratedColumn<int>(
+    'journal_entry_id',
     aliasedName,
     true,
-    type: DriftSqlType.string,
+    type: DriftSqlType.int,
     requiredDuringInsert: false,
   );
   @override
@@ -867,8 +1053,7 @@ class $RoundsTable extends Rounds with TableInfo<$RoundsTable, Round> {
     walkedOrCart,
     partners,
     weather,
-    rating,
-    notes,
+    journalEntryId,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -925,16 +1110,13 @@ class $RoundsTable extends Rounds with TableInfo<$RoundsTable, Round> {
         weather.isAcceptableOrUnknown(data['weather']!, _weatherMeta),
       );
     }
-    if (data.containsKey('rating')) {
+    if (data.containsKey('journal_entry_id')) {
       context.handle(
-        _ratingMeta,
-        rating.isAcceptableOrUnknown(data['rating']!, _ratingMeta),
-      );
-    }
-    if (data.containsKey('notes')) {
-      context.handle(
-        _notesMeta,
-        notes.isAcceptableOrUnknown(data['notes']!, _notesMeta),
+        _journalEntryIdMeta,
+        journalEntryId.isAcceptableOrUnknown(
+          data['journal_entry_id']!,
+          _journalEntryIdMeta,
+        ),
       );
     }
     return context;
@@ -986,13 +1168,9 @@ class $RoundsTable extends Rounds with TableInfo<$RoundsTable, Round> {
         DriftSqlType.string,
         data['${effectivePrefix}weather'],
       ),
-      rating: attachedDatabase.typeMapping.read(
+      journalEntryId: attachedDatabase.typeMapping.read(
         DriftSqlType.int,
-        data['${effectivePrefix}rating'],
-      ),
-      notes: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}notes'],
+        data['${effectivePrefix}journal_entry_id'],
       ),
     );
   }
@@ -1024,8 +1202,7 @@ class Round extends DataClass implements Insertable<Round> {
   final WalkedOrCart? walkedOrCart;
   final String partners;
   final String? weather;
-  final int? rating;
-  final String? notes;
+  final int? journalEntryId;
   const Round({
     required this.id,
     required this.courseId,
@@ -1036,8 +1213,7 @@ class Round extends DataClass implements Insertable<Round> {
     this.walkedOrCart,
     required this.partners,
     this.weather,
-    this.rating,
-    this.notes,
+    this.journalEntryId,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -1065,11 +1241,8 @@ class Round extends DataClass implements Insertable<Round> {
     if (!nullToAbsent || weather != null) {
       map['weather'] = Variable<String>(weather);
     }
-    if (!nullToAbsent || rating != null) {
-      map['rating'] = Variable<int>(rating);
-    }
-    if (!nullToAbsent || notes != null) {
-      map['notes'] = Variable<String>(notes);
+    if (!nullToAbsent || journalEntryId != null) {
+      map['journal_entry_id'] = Variable<int>(journalEntryId);
     }
     return map;
   }
@@ -1091,12 +1264,9 @@ class Round extends DataClass implements Insertable<Round> {
       weather: weather == null && nullToAbsent
           ? const Value.absent()
           : Value(weather),
-      rating: rating == null && nullToAbsent
+      journalEntryId: journalEntryId == null && nullToAbsent
           ? const Value.absent()
-          : Value(rating),
-      notes: notes == null && nullToAbsent
-          ? const Value.absent()
-          : Value(notes),
+          : Value(journalEntryId),
     );
   }
 
@@ -1119,8 +1289,7 @@ class Round extends DataClass implements Insertable<Round> {
       ),
       partners: serializer.fromJson<String>(json['partners']),
       weather: serializer.fromJson<String?>(json['weather']),
-      rating: serializer.fromJson<int?>(json['rating']),
-      notes: serializer.fromJson<String?>(json['notes']),
+      journalEntryId: serializer.fromJson<int?>(json['journalEntryId']),
     );
   }
   @override
@@ -1140,8 +1309,7 @@ class Round extends DataClass implements Insertable<Round> {
       ),
       'partners': serializer.toJson<String>(partners),
       'weather': serializer.toJson<String?>(weather),
-      'rating': serializer.toJson<int?>(rating),
-      'notes': serializer.toJson<String?>(notes),
+      'journalEntryId': serializer.toJson<int?>(journalEntryId),
     };
   }
 
@@ -1155,8 +1323,7 @@ class Round extends DataClass implements Insertable<Round> {
     Value<WalkedOrCart?> walkedOrCart = const Value.absent(),
     String? partners,
     Value<String?> weather = const Value.absent(),
-    Value<int?> rating = const Value.absent(),
-    Value<String?> notes = const Value.absent(),
+    Value<int?> journalEntryId = const Value.absent(),
   }) => Round(
     id: id ?? this.id,
     courseId: courseId ?? this.courseId,
@@ -1167,8 +1334,9 @@ class Round extends DataClass implements Insertable<Round> {
     walkedOrCart: walkedOrCart.present ? walkedOrCart.value : this.walkedOrCart,
     partners: partners ?? this.partners,
     weather: weather.present ? weather.value : this.weather,
-    rating: rating.present ? rating.value : this.rating,
-    notes: notes.present ? notes.value : this.notes,
+    journalEntryId: journalEntryId.present
+        ? journalEntryId.value
+        : this.journalEntryId,
   );
   Round copyWithCompanion(RoundsCompanion data) {
     return Round(
@@ -1187,8 +1355,9 @@ class Round extends DataClass implements Insertable<Round> {
           : this.walkedOrCart,
       partners: data.partners.present ? data.partners.value : this.partners,
       weather: data.weather.present ? data.weather.value : this.weather,
-      rating: data.rating.present ? data.rating.value : this.rating,
-      notes: data.notes.present ? data.notes.value : this.notes,
+      journalEntryId: data.journalEntryId.present
+          ? data.journalEntryId.value
+          : this.journalEntryId,
     );
   }
 
@@ -1204,8 +1373,7 @@ class Round extends DataClass implements Insertable<Round> {
           ..write('walkedOrCart: $walkedOrCart, ')
           ..write('partners: $partners, ')
           ..write('weather: $weather, ')
-          ..write('rating: $rating, ')
-          ..write('notes: $notes')
+          ..write('journalEntryId: $journalEntryId')
           ..write(')'))
         .toString();
   }
@@ -1221,8 +1389,7 @@ class Round extends DataClass implements Insertable<Round> {
     walkedOrCart,
     partners,
     weather,
-    rating,
-    notes,
+    journalEntryId,
   );
   @override
   bool operator ==(Object other) =>
@@ -1237,8 +1404,7 @@ class Round extends DataClass implements Insertable<Round> {
           other.walkedOrCart == this.walkedOrCart &&
           other.partners == this.partners &&
           other.weather == this.weather &&
-          other.rating == this.rating &&
-          other.notes == this.notes);
+          other.journalEntryId == this.journalEntryId);
 }
 
 class RoundsCompanion extends UpdateCompanion<Round> {
@@ -1251,8 +1417,7 @@ class RoundsCompanion extends UpdateCompanion<Round> {
   final Value<WalkedOrCart?> walkedOrCart;
   final Value<String> partners;
   final Value<String?> weather;
-  final Value<int?> rating;
-  final Value<String?> notes;
+  final Value<int?> journalEntryId;
   const RoundsCompanion({
     this.id = const Value.absent(),
     this.courseId = const Value.absent(),
@@ -1263,8 +1428,7 @@ class RoundsCompanion extends UpdateCompanion<Round> {
     this.walkedOrCart = const Value.absent(),
     this.partners = const Value.absent(),
     this.weather = const Value.absent(),
-    this.rating = const Value.absent(),
-    this.notes = const Value.absent(),
+    this.journalEntryId = const Value.absent(),
   });
   RoundsCompanion.insert({
     this.id = const Value.absent(),
@@ -1276,8 +1440,7 @@ class RoundsCompanion extends UpdateCompanion<Round> {
     this.walkedOrCart = const Value.absent(),
     this.partners = const Value.absent(),
     this.weather = const Value.absent(),
-    this.rating = const Value.absent(),
-    this.notes = const Value.absent(),
+    this.journalEntryId = const Value.absent(),
   }) : courseId = Value(courseId),
        date = Value(date),
        holesPlayed = Value(holesPlayed);
@@ -1291,8 +1454,7 @@ class RoundsCompanion extends UpdateCompanion<Round> {
     Expression<String>? walkedOrCart,
     Expression<String>? partners,
     Expression<String>? weather,
-    Expression<int>? rating,
-    Expression<String>? notes,
+    Expression<int>? journalEntryId,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
@@ -1304,8 +1466,7 @@ class RoundsCompanion extends UpdateCompanion<Round> {
       if (walkedOrCart != null) 'walked_or_cart': walkedOrCart,
       if (partners != null) 'partners': partners,
       if (weather != null) 'weather': weather,
-      if (rating != null) 'rating': rating,
-      if (notes != null) 'notes': notes,
+      if (journalEntryId != null) 'journal_entry_id': journalEntryId,
     });
   }
 
@@ -1319,8 +1480,7 @@ class RoundsCompanion extends UpdateCompanion<Round> {
     Value<WalkedOrCart?>? walkedOrCart,
     Value<String>? partners,
     Value<String?>? weather,
-    Value<int?>? rating,
-    Value<String?>? notes,
+    Value<int?>? journalEntryId,
   }) {
     return RoundsCompanion(
       id: id ?? this.id,
@@ -1332,8 +1492,7 @@ class RoundsCompanion extends UpdateCompanion<Round> {
       walkedOrCart: walkedOrCart ?? this.walkedOrCart,
       partners: partners ?? this.partners,
       weather: weather ?? this.weather,
-      rating: rating ?? this.rating,
-      notes: notes ?? this.notes,
+      journalEntryId: journalEntryId ?? this.journalEntryId,
     );
   }
 
@@ -1371,11 +1530,8 @@ class RoundsCompanion extends UpdateCompanion<Round> {
     if (weather.present) {
       map['weather'] = Variable<String>(weather.value);
     }
-    if (rating.present) {
-      map['rating'] = Variable<int>(rating.value);
-    }
-    if (notes.present) {
-      map['notes'] = Variable<String>(notes.value);
+    if (journalEntryId.present) {
+      map['journal_entry_id'] = Variable<int>(journalEntryId.value);
     }
     return map;
   }
@@ -1392,310 +1548,7 @@ class RoundsCompanion extends UpdateCompanion<Round> {
           ..write('walkedOrCart: $walkedOrCart, ')
           ..write('partners: $partners, ')
           ..write('weather: $weather, ')
-          ..write('rating: $rating, ')
-          ..write('notes: $notes')
-          ..write(')'))
-        .toString();
-  }
-}
-
-class $RoundPhotosTable extends RoundPhotos
-    with TableInfo<$RoundPhotosTable, RoundPhoto> {
-  @override
-  final GeneratedDatabase attachedDatabase;
-  final String? _alias;
-  $RoundPhotosTable(this.attachedDatabase, [this._alias]);
-  static const VerificationMeta _idMeta = const VerificationMeta('id');
-  @override
-  late final GeneratedColumn<int> id = GeneratedColumn<int>(
-    'id',
-    aliasedName,
-    false,
-    hasAutoIncrement: true,
-    type: DriftSqlType.int,
-    requiredDuringInsert: false,
-    defaultConstraints: GeneratedColumn.constraintIsAlways(
-      'PRIMARY KEY AUTOINCREMENT',
-    ),
-  );
-  static const VerificationMeta _roundIdMeta = const VerificationMeta(
-    'roundId',
-  );
-  @override
-  late final GeneratedColumn<int> roundId = GeneratedColumn<int>(
-    'round_id',
-    aliasedName,
-    false,
-    type: DriftSqlType.int,
-    requiredDuringInsert: true,
-    defaultConstraints: GeneratedColumn.constraintIsAlways(
-      'REFERENCES rounds (id) ON DELETE CASCADE',
-    ),
-  );
-  static const VerificationMeta _pathMeta = const VerificationMeta('path');
-  @override
-  late final GeneratedColumn<String> path = GeneratedColumn<String>(
-    'path',
-    aliasedName,
-    false,
-    type: DriftSqlType.string,
-    requiredDuringInsert: true,
-  );
-  static const VerificationMeta _captionMeta = const VerificationMeta(
-    'caption',
-  );
-  @override
-  late final GeneratedColumn<String> caption = GeneratedColumn<String>(
-    'caption',
-    aliasedName,
-    true,
-    type: DriftSqlType.string,
-    requiredDuringInsert: false,
-  );
-  @override
-  List<GeneratedColumn> get $columns => [id, roundId, path, caption];
-  @override
-  String get aliasedName => _alias ?? actualTableName;
-  @override
-  String get actualTableName => $name;
-  static const String $name = 'round_photos';
-  @override
-  VerificationContext validateIntegrity(
-    Insertable<RoundPhoto> instance, {
-    bool isInserting = false,
-  }) {
-    final context = VerificationContext();
-    final data = instance.toColumns(true);
-    if (data.containsKey('id')) {
-      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
-    }
-    if (data.containsKey('round_id')) {
-      context.handle(
-        _roundIdMeta,
-        roundId.isAcceptableOrUnknown(data['round_id']!, _roundIdMeta),
-      );
-    } else if (isInserting) {
-      context.missing(_roundIdMeta);
-    }
-    if (data.containsKey('path')) {
-      context.handle(
-        _pathMeta,
-        path.isAcceptableOrUnknown(data['path']!, _pathMeta),
-      );
-    } else if (isInserting) {
-      context.missing(_pathMeta);
-    }
-    if (data.containsKey('caption')) {
-      context.handle(
-        _captionMeta,
-        caption.isAcceptableOrUnknown(data['caption']!, _captionMeta),
-      );
-    }
-    return context;
-  }
-
-  @override
-  Set<GeneratedColumn> get $primaryKey => {id};
-  @override
-  RoundPhoto map(Map<String, dynamic> data, {String? tablePrefix}) {
-    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
-    return RoundPhoto(
-      id: attachedDatabase.typeMapping.read(
-        DriftSqlType.int,
-        data['${effectivePrefix}id'],
-      )!,
-      roundId: attachedDatabase.typeMapping.read(
-        DriftSqlType.int,
-        data['${effectivePrefix}round_id'],
-      )!,
-      path: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}path'],
-      )!,
-      caption: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}caption'],
-      ),
-    );
-  }
-
-  @override
-  $RoundPhotosTable createAlias(String alias) {
-    return $RoundPhotosTable(attachedDatabase, alias);
-  }
-}
-
-class RoundPhoto extends DataClass implements Insertable<RoundPhoto> {
-  final int id;
-  final int roundId;
-  final String path;
-  final String? caption;
-  const RoundPhoto({
-    required this.id,
-    required this.roundId,
-    required this.path,
-    this.caption,
-  });
-  @override
-  Map<String, Expression> toColumns(bool nullToAbsent) {
-    final map = <String, Expression>{};
-    map['id'] = Variable<int>(id);
-    map['round_id'] = Variable<int>(roundId);
-    map['path'] = Variable<String>(path);
-    if (!nullToAbsent || caption != null) {
-      map['caption'] = Variable<String>(caption);
-    }
-    return map;
-  }
-
-  RoundPhotosCompanion toCompanion(bool nullToAbsent) {
-    return RoundPhotosCompanion(
-      id: Value(id),
-      roundId: Value(roundId),
-      path: Value(path),
-      caption: caption == null && nullToAbsent
-          ? const Value.absent()
-          : Value(caption),
-    );
-  }
-
-  factory RoundPhoto.fromJson(
-    Map<String, dynamic> json, {
-    ValueSerializer? serializer,
-  }) {
-    serializer ??= driftRuntimeOptions.defaultSerializer;
-    return RoundPhoto(
-      id: serializer.fromJson<int>(json['id']),
-      roundId: serializer.fromJson<int>(json['roundId']),
-      path: serializer.fromJson<String>(json['path']),
-      caption: serializer.fromJson<String?>(json['caption']),
-    );
-  }
-  @override
-  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
-    serializer ??= driftRuntimeOptions.defaultSerializer;
-    return <String, dynamic>{
-      'id': serializer.toJson<int>(id),
-      'roundId': serializer.toJson<int>(roundId),
-      'path': serializer.toJson<String>(path),
-      'caption': serializer.toJson<String?>(caption),
-    };
-  }
-
-  RoundPhoto copyWith({
-    int? id,
-    int? roundId,
-    String? path,
-    Value<String?> caption = const Value.absent(),
-  }) => RoundPhoto(
-    id: id ?? this.id,
-    roundId: roundId ?? this.roundId,
-    path: path ?? this.path,
-    caption: caption.present ? caption.value : this.caption,
-  );
-  RoundPhoto copyWithCompanion(RoundPhotosCompanion data) {
-    return RoundPhoto(
-      id: data.id.present ? data.id.value : this.id,
-      roundId: data.roundId.present ? data.roundId.value : this.roundId,
-      path: data.path.present ? data.path.value : this.path,
-      caption: data.caption.present ? data.caption.value : this.caption,
-    );
-  }
-
-  @override
-  String toString() {
-    return (StringBuffer('RoundPhoto(')
-          ..write('id: $id, ')
-          ..write('roundId: $roundId, ')
-          ..write('path: $path, ')
-          ..write('caption: $caption')
-          ..write(')'))
-        .toString();
-  }
-
-  @override
-  int get hashCode => Object.hash(id, roundId, path, caption);
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      (other is RoundPhoto &&
-          other.id == this.id &&
-          other.roundId == this.roundId &&
-          other.path == this.path &&
-          other.caption == this.caption);
-}
-
-class RoundPhotosCompanion extends UpdateCompanion<RoundPhoto> {
-  final Value<int> id;
-  final Value<int> roundId;
-  final Value<String> path;
-  final Value<String?> caption;
-  const RoundPhotosCompanion({
-    this.id = const Value.absent(),
-    this.roundId = const Value.absent(),
-    this.path = const Value.absent(),
-    this.caption = const Value.absent(),
-  });
-  RoundPhotosCompanion.insert({
-    this.id = const Value.absent(),
-    required int roundId,
-    required String path,
-    this.caption = const Value.absent(),
-  }) : roundId = Value(roundId),
-       path = Value(path);
-  static Insertable<RoundPhoto> custom({
-    Expression<int>? id,
-    Expression<int>? roundId,
-    Expression<String>? path,
-    Expression<String>? caption,
-  }) {
-    return RawValuesInsertable({
-      if (id != null) 'id': id,
-      if (roundId != null) 'round_id': roundId,
-      if (path != null) 'path': path,
-      if (caption != null) 'caption': caption,
-    });
-  }
-
-  RoundPhotosCompanion copyWith({
-    Value<int>? id,
-    Value<int>? roundId,
-    Value<String>? path,
-    Value<String?>? caption,
-  }) {
-    return RoundPhotosCompanion(
-      id: id ?? this.id,
-      roundId: roundId ?? this.roundId,
-      path: path ?? this.path,
-      caption: caption ?? this.caption,
-    );
-  }
-
-  @override
-  Map<String, Expression> toColumns(bool nullToAbsent) {
-    final map = <String, Expression>{};
-    if (id.present) {
-      map['id'] = Variable<int>(id.value);
-    }
-    if (roundId.present) {
-      map['round_id'] = Variable<int>(roundId.value);
-    }
-    if (path.present) {
-      map['path'] = Variable<String>(path.value);
-    }
-    if (caption.present) {
-      map['caption'] = Variable<String>(caption.value);
-    }
-    return map;
-  }
-
-  @override
-  String toString() {
-    return (StringBuffer('RoundPhotosCompanion(')
-          ..write('id: $id, ')
-          ..write('roundId: $roundId, ')
-          ..write('path: $path, ')
-          ..write('caption: $caption')
+          ..write('journalEntryId: $journalEntryId')
           ..write(')'))
         .toString();
   }
@@ -2067,22 +1920,403 @@ class BucketListCompanion extends UpdateCompanion<BucketItem> {
   }
 }
 
+class $AppJournalPhotosTable extends AppJournalPhotos
+    with TableInfo<$AppJournalPhotosTable, JournalPhoto> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $AppJournalPhotosTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+    'id',
+    aliasedName,
+    false,
+    hasAutoIncrement: true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'PRIMARY KEY AUTOINCREMENT',
+    ),
+  );
+  static const VerificationMeta _entryIdMeta = const VerificationMeta(
+    'entryId',
+  );
+  @override
+  late final GeneratedColumn<int> entryId = GeneratedColumn<int>(
+    'entry_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _pathMeta = const VerificationMeta('path');
+  @override
+  late final GeneratedColumn<String> path = GeneratedColumn<String>(
+    'path',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _captionMeta = const VerificationMeta(
+    'caption',
+  );
+  @override
+  late final GeneratedColumn<String> caption = GeneratedColumn<String>(
+    'caption',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [id, entryId, path, caption];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'journal_photos';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<JournalPhoto> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('entry_id')) {
+      context.handle(
+        _entryIdMeta,
+        entryId.isAcceptableOrUnknown(data['entry_id']!, _entryIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_entryIdMeta);
+    }
+    if (data.containsKey('path')) {
+      context.handle(
+        _pathMeta,
+        path.isAcceptableOrUnknown(data['path']!, _pathMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_pathMeta);
+    }
+    if (data.containsKey('caption')) {
+      context.handle(
+        _captionMeta,
+        caption.isAcceptableOrUnknown(data['caption']!, _captionMeta),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  JournalPhoto map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return JournalPhoto(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}id'],
+      )!,
+      entryId: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}entry_id'],
+      )!,
+      path: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}path'],
+      )!,
+      caption: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}caption'],
+      ),
+    );
+  }
+
+  @override
+  $AppJournalPhotosTable createAlias(String alias) {
+    return $AppJournalPhotosTable(attachedDatabase, alias);
+  }
+}
+
+class AppJournalPhotosCompanion extends UpdateCompanion<JournalPhoto> {
+  final Value<int> id;
+  final Value<int> entryId;
+  final Value<String> path;
+  final Value<String?> caption;
+  const AppJournalPhotosCompanion({
+    this.id = const Value.absent(),
+    this.entryId = const Value.absent(),
+    this.path = const Value.absent(),
+    this.caption = const Value.absent(),
+  });
+  AppJournalPhotosCompanion.insert({
+    this.id = const Value.absent(),
+    required int entryId,
+    required String path,
+    this.caption = const Value.absent(),
+  }) : entryId = Value(entryId),
+       path = Value(path);
+  static Insertable<JournalPhoto> custom({
+    Expression<int>? id,
+    Expression<int>? entryId,
+    Expression<String>? path,
+    Expression<String>? caption,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (entryId != null) 'entry_id': entryId,
+      if (path != null) 'path': path,
+      if (caption != null) 'caption': caption,
+    });
+  }
+
+  AppJournalPhotosCompanion copyWith({
+    Value<int>? id,
+    Value<int>? entryId,
+    Value<String>? path,
+    Value<String?>? caption,
+  }) {
+    return AppJournalPhotosCompanion(
+      id: id ?? this.id,
+      entryId: entryId ?? this.entryId,
+      path: path ?? this.path,
+      caption: caption ?? this.caption,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (entryId.present) {
+      map['entry_id'] = Variable<int>(entryId.value);
+    }
+    if (path.present) {
+      map['path'] = Variable<String>(path.value);
+    }
+    if (caption.present) {
+      map['caption'] = Variable<String>(caption.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('AppJournalPhotosCompanion(')
+          ..write('id: $id, ')
+          ..write('entryId: $entryId, ')
+          ..write('path: $path, ')
+          ..write('caption: $caption')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $AppJournalTagsTable extends AppJournalTags
+    with TableInfo<$AppJournalTagsTable, JournalTag> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $AppJournalTagsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+    'id',
+    aliasedName,
+    false,
+    hasAutoIncrement: true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'PRIMARY KEY AUTOINCREMENT',
+    ),
+  );
+  static const VerificationMeta _entryIdMeta = const VerificationMeta(
+    'entryId',
+  );
+  @override
+  late final GeneratedColumn<int> entryId = GeneratedColumn<int>(
+    'entry_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _tagMeta = const VerificationMeta('tag');
+  @override
+  late final GeneratedColumn<String> tag = GeneratedColumn<String>(
+    'tag',
+    aliasedName,
+    false,
+    additionalChecks: GeneratedColumn.checkTextLength(
+      minTextLength: 1,
+      maxTextLength: 60,
+    ),
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [id, entryId, tag];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'journal_tags';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<JournalTag> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('entry_id')) {
+      context.handle(
+        _entryIdMeta,
+        entryId.isAcceptableOrUnknown(data['entry_id']!, _entryIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_entryIdMeta);
+    }
+    if (data.containsKey('tag')) {
+      context.handle(
+        _tagMeta,
+        tag.isAcceptableOrUnknown(data['tag']!, _tagMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_tagMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  List<Set<GeneratedColumn>> get uniqueKeys => [
+    {entryId, tag},
+  ];
+  @override
+  JournalTag map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return JournalTag(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}id'],
+      )!,
+      entryId: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}entry_id'],
+      )!,
+      tag: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}tag'],
+      )!,
+    );
+  }
+
+  @override
+  $AppJournalTagsTable createAlias(String alias) {
+    return $AppJournalTagsTable(attachedDatabase, alias);
+  }
+}
+
+class AppJournalTagsCompanion extends UpdateCompanion<JournalTag> {
+  final Value<int> id;
+  final Value<int> entryId;
+  final Value<String> tag;
+  const AppJournalTagsCompanion({
+    this.id = const Value.absent(),
+    this.entryId = const Value.absent(),
+    this.tag = const Value.absent(),
+  });
+  AppJournalTagsCompanion.insert({
+    this.id = const Value.absent(),
+    required int entryId,
+    required String tag,
+  }) : entryId = Value(entryId),
+       tag = Value(tag);
+  static Insertable<JournalTag> custom({
+    Expression<int>? id,
+    Expression<int>? entryId,
+    Expression<String>? tag,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (entryId != null) 'entry_id': entryId,
+      if (tag != null) 'tag': tag,
+    });
+  }
+
+  AppJournalTagsCompanion copyWith({
+    Value<int>? id,
+    Value<int>? entryId,
+    Value<String>? tag,
+  }) {
+    return AppJournalTagsCompanion(
+      id: id ?? this.id,
+      entryId: entryId ?? this.entryId,
+      tag: tag ?? this.tag,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (entryId.present) {
+      map['entry_id'] = Variable<int>(entryId.value);
+    }
+    if (tag.present) {
+      map['tag'] = Variable<String>(tag.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('AppJournalTagsCompanion(')
+          ..write('id: $id, ')
+          ..write('entryId: $entryId, ')
+          ..write('tag: $tag')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
   late final $CoursesTable courses = $CoursesTable(this);
+  late final $AppJournalEntriesTable appJournalEntries =
+      $AppJournalEntriesTable(this);
   late final $RoundsTable rounds = $RoundsTable(this);
-  late final $RoundPhotosTable roundPhotos = $RoundPhotosTable(this);
   late final $BucketListTable bucketList = $BucketListTable(this);
+  late final $AppJournalPhotosTable appJournalPhotos = $AppJournalPhotosTable(
+    this,
+  );
+  late final $AppJournalTagsTable appJournalTags = $AppJournalTagsTable(this);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
   @override
   List<DatabaseSchemaEntity> get allSchemaEntities => [
     courses,
+    appJournalEntries,
     rounds,
-    roundPhotos,
     bucketList,
+    appJournalPhotos,
+    appJournalTags,
   ];
   @override
   StreamQueryUpdateRules get streamUpdateRules => const StreamQueryUpdateRules([
@@ -2092,13 +2326,6 @@ abstract class _$AppDatabase extends GeneratedDatabase {
         limitUpdateKind: UpdateKind.delete,
       ),
       result: [TableUpdate('rounds', kind: UpdateKind.delete)],
-    ),
-    WritePropagation(
-      on: TableUpdateQuery.onTableName(
-        'rounds',
-        limitUpdateKind: UpdateKind.delete,
-      ),
-      result: [TableUpdate('round_photos', kind: UpdateKind.delete)],
     ),
     WritePropagation(
       on: TableUpdateQuery.onTableName(
@@ -2658,6 +2885,199 @@ typedef $$CoursesTableProcessedTableManager =
       Course,
       PrefetchHooks Function({bool roundsRefs, bool bucketListRefs})
     >;
+typedef $$AppJournalEntriesTableCreateCompanionBuilder =
+    AppJournalEntriesCompanion Function({
+      Value<int> id,
+      Value<String?> notes,
+      Value<int?> rating,
+      Value<DateTime> createdAt,
+    });
+typedef $$AppJournalEntriesTableUpdateCompanionBuilder =
+    AppJournalEntriesCompanion Function({
+      Value<int> id,
+      Value<String?> notes,
+      Value<int?> rating,
+      Value<DateTime> createdAt,
+    });
+
+class $$AppJournalEntriesTableFilterComposer
+    extends Composer<_$AppDatabase, $AppJournalEntriesTable> {
+  $$AppJournalEntriesTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get notes => $composableBuilder(
+    column: $table.notes,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get rating => $composableBuilder(
+    column: $table.rating,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$AppJournalEntriesTableOrderingComposer
+    extends Composer<_$AppDatabase, $AppJournalEntriesTable> {
+  $$AppJournalEntriesTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get notes => $composableBuilder(
+    column: $table.notes,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get rating => $composableBuilder(
+    column: $table.rating,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$AppJournalEntriesTableAnnotationComposer
+    extends Composer<_$AppDatabase, $AppJournalEntriesTable> {
+  $$AppJournalEntriesTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get notes =>
+      $composableBuilder(column: $table.notes, builder: (column) => column);
+
+  GeneratedColumn<int> get rating =>
+      $composableBuilder(column: $table.rating, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => column);
+}
+
+class $$AppJournalEntriesTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $AppJournalEntriesTable,
+          JournalEntry,
+          $$AppJournalEntriesTableFilterComposer,
+          $$AppJournalEntriesTableOrderingComposer,
+          $$AppJournalEntriesTableAnnotationComposer,
+          $$AppJournalEntriesTableCreateCompanionBuilder,
+          $$AppJournalEntriesTableUpdateCompanionBuilder,
+          (
+            JournalEntry,
+            BaseReferences<
+              _$AppDatabase,
+              $AppJournalEntriesTable,
+              JournalEntry
+            >,
+          ),
+          JournalEntry,
+          PrefetchHooks Function()
+        > {
+  $$AppJournalEntriesTableTableManager(
+    _$AppDatabase db,
+    $AppJournalEntriesTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$AppJournalEntriesTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$AppJournalEntriesTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$AppJournalEntriesTableAnnotationComposer(
+                $db: db,
+                $table: table,
+              ),
+          updateCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                Value<String?> notes = const Value.absent(),
+                Value<int?> rating = const Value.absent(),
+                Value<DateTime> createdAt = const Value.absent(),
+              }) => AppJournalEntriesCompanion(
+                id: id,
+                notes: notes,
+                rating: rating,
+                createdAt: createdAt,
+              ),
+          createCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                Value<String?> notes = const Value.absent(),
+                Value<int?> rating = const Value.absent(),
+                Value<DateTime> createdAt = const Value.absent(),
+              }) => AppJournalEntriesCompanion.insert(
+                id: id,
+                notes: notes,
+                rating: rating,
+                createdAt: createdAt,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable<$AppJournalEntriesTable, JournalEntry>(table),
+                  BaseReferences<
+                    _$AppDatabase,
+                    $AppJournalEntriesTable,
+                    JournalEntry
+                  >(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$AppJournalEntriesTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $AppJournalEntriesTable,
+      JournalEntry,
+      $$AppJournalEntriesTableFilterComposer,
+      $$AppJournalEntriesTableOrderingComposer,
+      $$AppJournalEntriesTableAnnotationComposer,
+      $$AppJournalEntriesTableCreateCompanionBuilder,
+      $$AppJournalEntriesTableUpdateCompanionBuilder,
+      (
+        JournalEntry,
+        BaseReferences<_$AppDatabase, $AppJournalEntriesTable, JournalEntry>,
+      ),
+      JournalEntry,
+      PrefetchHooks Function()
+    >;
 typedef $$RoundsTableCreateCompanionBuilder =
     RoundsCompanion Function({
       Value<int> id,
@@ -2669,8 +3089,7 @@ typedef $$RoundsTableCreateCompanionBuilder =
       Value<WalkedOrCart?> walkedOrCart,
       Value<String> partners,
       Value<String?> weather,
-      Value<int?> rating,
-      Value<String?> notes,
+      Value<int?> journalEntryId,
     });
 typedef $$RoundsTableUpdateCompanionBuilder =
     RoundsCompanion Function({
@@ -2683,8 +3102,7 @@ typedef $$RoundsTableUpdateCompanionBuilder =
       Value<WalkedOrCart?> walkedOrCart,
       Value<String> partners,
       Value<String?> weather,
-      Value<int?> rating,
-      Value<String?> notes,
+      Value<int?> journalEntryId,
     });
 
 final class $$RoundsTableReferences
@@ -2705,24 +3123,6 @@ final class $$RoundsTableReferences
     if (item == null) return manager;
     return ProcessedTableManager(
       manager.$state.copyWith(prefetchedData: [item]),
-    );
-  }
-
-  static MultiTypedResultKey<$RoundPhotosTable, List<RoundPhoto>>
-  _roundPhotosRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
-    db.roundPhotos,
-    aliasName: 'rounds__id__round_photos__round_id',
-  );
-
-  $$RoundPhotosTableProcessedTableManager get roundPhotosRefs {
-    final manager = $$RoundPhotosTableTableManager(
-      $_db,
-      $_db.roundPhotos,
-    ).filter((f) => f.roundId.id.sqlEquals($_itemColumn<int>('id')!));
-
-    final cache = $_typedResult.readTableOrNull(_roundPhotosRefsTable($_db));
-    return ProcessedTableManager(
-      manager.$state.copyWith(prefetchedData: cache),
     );
   }
 
@@ -2796,13 +3196,8 @@ class $$RoundsTableFilterComposer
     builder: (column) => ColumnFilters(column),
   );
 
-  ColumnFilters<int> get rating => $composableBuilder(
-    column: $table.rating,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<String> get notes => $composableBuilder(
-    column: $table.notes,
+  ColumnFilters<int> get journalEntryId => $composableBuilder(
+    column: $table.journalEntryId,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -2827,31 +3222,6 @@ class $$RoundsTableFilterComposer
           ),
     );
     return composer;
-  }
-
-  Expression<bool> roundPhotosRefs(
-    Expression<bool> Function($$RoundPhotosTableFilterComposer f) f,
-  ) {
-    final $$RoundPhotosTableFilterComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.id,
-      referencedTable: $db.roundPhotos,
-      getReferencedColumn: (t) => t.roundId,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$RoundPhotosTableFilterComposer(
-            $db: $db,
-            $table: $db.roundPhotos,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return f(composer);
   }
 
   Expression<bool> bucketListRefs(
@@ -2929,13 +3299,8 @@ class $$RoundsTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
-  ColumnOrderings<int> get rating => $composableBuilder(
-    column: $table.rating,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<String> get notes => $composableBuilder(
-    column: $table.notes,
+  ColumnOrderings<int> get journalEntryId => $composableBuilder(
+    column: $table.journalEntryId,
     builder: (column) => ColumnOrderings(column),
   );
 
@@ -3004,11 +3369,10 @@ class $$RoundsTableAnnotationComposer
   GeneratedColumn<String> get weather =>
       $composableBuilder(column: $table.weather, builder: (column) => column);
 
-  GeneratedColumn<int> get rating =>
-      $composableBuilder(column: $table.rating, builder: (column) => column);
-
-  GeneratedColumn<String> get notes =>
-      $composableBuilder(column: $table.notes, builder: (column) => column);
+  GeneratedColumn<int> get journalEntryId => $composableBuilder(
+    column: $table.journalEntryId,
+    builder: (column) => column,
+  );
 
   $$CoursesTableAnnotationComposer get courseId {
     final $$CoursesTableAnnotationComposer composer = $composerBuilder(
@@ -3031,31 +3395,6 @@ class $$RoundsTableAnnotationComposer
           ),
     );
     return composer;
-  }
-
-  Expression<T> roundPhotosRefs<T extends Object>(
-    Expression<T> Function($$RoundPhotosTableAnnotationComposer a) f,
-  ) {
-    final $$RoundPhotosTableAnnotationComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.id,
-      referencedTable: $db.roundPhotos,
-      getReferencedColumn: (t) => t.roundId,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$RoundPhotosTableAnnotationComposer(
-            $db: $db,
-            $table: $db.roundPhotos,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return f(composer);
   }
 
   Expression<T> bucketListRefs<T extends Object>(
@@ -3097,11 +3436,7 @@ class $$RoundsTableTableManager
           $$RoundsTableUpdateCompanionBuilder,
           (Round, $$RoundsTableReferences),
           Round,
-          PrefetchHooks Function({
-            bool courseId,
-            bool roundPhotosRefs,
-            bool bucketListRefs,
-          })
+          PrefetchHooks Function({bool courseId, bool bucketListRefs})
         > {
   $$RoundsTableTableManager(_$AppDatabase db, $RoundsTable table)
     : super(
@@ -3125,8 +3460,7 @@ class $$RoundsTableTableManager
                 Value<WalkedOrCart?> walkedOrCart = const Value.absent(),
                 Value<String> partners = const Value.absent(),
                 Value<String?> weather = const Value.absent(),
-                Value<int?> rating = const Value.absent(),
-                Value<String?> notes = const Value.absent(),
+                Value<int?> journalEntryId = const Value.absent(),
               }) => RoundsCompanion(
                 id: id,
                 courseId: courseId,
@@ -3137,8 +3471,7 @@ class $$RoundsTableTableManager
                 walkedOrCart: walkedOrCart,
                 partners: partners,
                 weather: weather,
-                rating: rating,
-                notes: notes,
+                journalEntryId: journalEntryId,
               ),
           createCompanionCallback:
               ({
@@ -3151,8 +3484,7 @@ class $$RoundsTableTableManager
                 Value<WalkedOrCart?> walkedOrCart = const Value.absent(),
                 Value<String> partners = const Value.absent(),
                 Value<String?> weather = const Value.absent(),
-                Value<int?> rating = const Value.absent(),
-                Value<String?> notes = const Value.absent(),
+                Value<int?> journalEntryId = const Value.absent(),
               }) => RoundsCompanion.insert(
                 id: id,
                 courseId: courseId,
@@ -3163,8 +3495,7 @@ class $$RoundsTableTableManager
                 walkedOrCart: walkedOrCart,
                 partners: partners,
                 weather: weather,
-                rating: rating,
-                notes: notes,
+                journalEntryId: journalEntryId,
               ),
           withReferenceMapper: (p0) => p0
               .map(
@@ -3174,357 +3505,10 @@ class $$RoundsTableTableManager
                 ),
               )
               .toList(),
-          prefetchHooksCallback:
-              ({
-                courseId = false,
-                roundPhotosRefs = false,
-                bucketListRefs = false,
-              }) {
-                return PrefetchHooks(
-                  db: db,
-                  explicitlyWatchedTables: [
-                    if (roundPhotosRefs) db.roundPhotos,
-                    if (bucketListRefs) db.bucketList,
-                  ],
-                  addJoins:
-                      <
-                        T extends TableManagerState<
-                          dynamic,
-                          dynamic,
-                          dynamic,
-                          dynamic,
-                          dynamic,
-                          dynamic,
-                          dynamic,
-                          dynamic,
-                          dynamic,
-                          dynamic,
-                          dynamic
-                        >
-                      >(state) {
-                        if (courseId) {
-                          state =
-                              state.withJoin(
-                                    currentTable: table,
-                                    currentColumn: table.courseId,
-                                    referencedTable: $$RoundsTableReferences
-                                        ._courseIdTable(db),
-                                    referencedColumn: $$RoundsTableReferences
-                                        ._courseIdTable(db)
-                                        .id,
-                                  )
-                                  as T;
-                        }
-
-                        return state;
-                      },
-                  getPrefetchedDataCallback: (items) async {
-                    return [
-                      if (roundPhotosRefs)
-                        await $_getPrefetchedData<
-                          Round,
-                          $RoundsTable,
-                          RoundPhoto
-                        >(
-                          currentTable: table,
-                          referencedTable: $$RoundsTableReferences
-                              ._roundPhotosRefsTable(db),
-                          managerFromTypedResult: (p0) =>
-                              $$RoundsTableReferences(
-                                db,
-                                table,
-                                p0,
-                              ).roundPhotosRefs,
-                          referencedItemsForCurrentItem:
-                              (item, referencedItems) => referencedItems.where(
-                                (e) => e.roundId == item.id,
-                              ),
-                          typedResults: items,
-                        ),
-                      if (bucketListRefs)
-                        await $_getPrefetchedData<
-                          Round,
-                          $RoundsTable,
-                          BucketItem
-                        >(
-                          currentTable: table,
-                          referencedTable: $$RoundsTableReferences
-                              ._bucketListRefsTable(db),
-                          managerFromTypedResult: (p0) =>
-                              $$RoundsTableReferences(
-                                db,
-                                table,
-                                p0,
-                              ).bucketListRefs,
-                          referencedItemsForCurrentItem:
-                              (item, referencedItems) => referencedItems.where(
-                                (e) => e.doneRoundId == item.id,
-                              ),
-                          typedResults: items,
-                        ),
-                    ];
-                  },
-                );
-              },
-        ),
-      );
-}
-
-typedef $$RoundsTableProcessedTableManager =
-    ProcessedTableManager<
-      _$AppDatabase,
-      $RoundsTable,
-      Round,
-      $$RoundsTableFilterComposer,
-      $$RoundsTableOrderingComposer,
-      $$RoundsTableAnnotationComposer,
-      $$RoundsTableCreateCompanionBuilder,
-      $$RoundsTableUpdateCompanionBuilder,
-      (Round, $$RoundsTableReferences),
-      Round,
-      PrefetchHooks Function({
-        bool courseId,
-        bool roundPhotosRefs,
-        bool bucketListRefs,
-      })
-    >;
-typedef $$RoundPhotosTableCreateCompanionBuilder =
-    RoundPhotosCompanion Function({
-      Value<int> id,
-      required int roundId,
-      required String path,
-      Value<String?> caption,
-    });
-typedef $$RoundPhotosTableUpdateCompanionBuilder =
-    RoundPhotosCompanion Function({
-      Value<int> id,
-      Value<int> roundId,
-      Value<String> path,
-      Value<String?> caption,
-    });
-
-final class $$RoundPhotosTableReferences
-    extends BaseReferences<_$AppDatabase, $RoundPhotosTable, RoundPhoto> {
-  $$RoundPhotosTableReferences(super.$_db, super.$_table, super.$_typedResult);
-
-  static $RoundsTable _roundIdTable(_$AppDatabase db) =>
-      db.rounds.createAlias('round_photos__round_id__rounds__id');
-
-  $$RoundsTableProcessedTableManager get roundId {
-    final $_column = $_itemColumn<int>('round_id')!;
-
-    final manager = $$RoundsTableTableManager(
-      $_db,
-      $_db.rounds,
-    ).filter((f) => f.id.sqlEquals($_column));
-    final item = $_typedResult.readTableOrNull(_roundIdTable($_db));
-    if (item == null) return manager;
-    return ProcessedTableManager(
-      manager.$state.copyWith(prefetchedData: [item]),
-    );
-  }
-}
-
-class $$RoundPhotosTableFilterComposer
-    extends Composer<_$AppDatabase, $RoundPhotosTable> {
-  $$RoundPhotosTableFilterComposer({
-    required super.$db,
-    required super.$table,
-    super.joinBuilder,
-    super.$addJoinBuilderToRootComposer,
-    super.$removeJoinBuilderFromRootComposer,
-  });
-  ColumnFilters<int> get id => $composableBuilder(
-    column: $table.id,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<String> get path => $composableBuilder(
-    column: $table.path,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<String> get caption => $composableBuilder(
-    column: $table.caption,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  $$RoundsTableFilterComposer get roundId {
-    final $$RoundsTableFilterComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.roundId,
-      referencedTable: $db.rounds,
-      getReferencedColumn: (t) => t.id,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$RoundsTableFilterComposer(
-            $db: $db,
-            $table: $db.rounds,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return composer;
-  }
-}
-
-class $$RoundPhotosTableOrderingComposer
-    extends Composer<_$AppDatabase, $RoundPhotosTable> {
-  $$RoundPhotosTableOrderingComposer({
-    required super.$db,
-    required super.$table,
-    super.joinBuilder,
-    super.$addJoinBuilderToRootComposer,
-    super.$removeJoinBuilderFromRootComposer,
-  });
-  ColumnOrderings<int> get id => $composableBuilder(
-    column: $table.id,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<String> get path => $composableBuilder(
-    column: $table.path,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<String> get caption => $composableBuilder(
-    column: $table.caption,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  $$RoundsTableOrderingComposer get roundId {
-    final $$RoundsTableOrderingComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.roundId,
-      referencedTable: $db.rounds,
-      getReferencedColumn: (t) => t.id,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$RoundsTableOrderingComposer(
-            $db: $db,
-            $table: $db.rounds,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return composer;
-  }
-}
-
-class $$RoundPhotosTableAnnotationComposer
-    extends Composer<_$AppDatabase, $RoundPhotosTable> {
-  $$RoundPhotosTableAnnotationComposer({
-    required super.$db,
-    required super.$table,
-    super.joinBuilder,
-    super.$addJoinBuilderToRootComposer,
-    super.$removeJoinBuilderFromRootComposer,
-  });
-  GeneratedColumn<int> get id =>
-      $composableBuilder(column: $table.id, builder: (column) => column);
-
-  GeneratedColumn<String> get path =>
-      $composableBuilder(column: $table.path, builder: (column) => column);
-
-  GeneratedColumn<String> get caption =>
-      $composableBuilder(column: $table.caption, builder: (column) => column);
-
-  $$RoundsTableAnnotationComposer get roundId {
-    final $$RoundsTableAnnotationComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.roundId,
-      referencedTable: $db.rounds,
-      getReferencedColumn: (t) => t.id,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$RoundsTableAnnotationComposer(
-            $db: $db,
-            $table: $db.rounds,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return composer;
-  }
-}
-
-class $$RoundPhotosTableTableManager
-    extends
-        RootTableManager<
-          _$AppDatabase,
-          $RoundPhotosTable,
-          RoundPhoto,
-          $$RoundPhotosTableFilterComposer,
-          $$RoundPhotosTableOrderingComposer,
-          $$RoundPhotosTableAnnotationComposer,
-          $$RoundPhotosTableCreateCompanionBuilder,
-          $$RoundPhotosTableUpdateCompanionBuilder,
-          (RoundPhoto, $$RoundPhotosTableReferences),
-          RoundPhoto,
-          PrefetchHooks Function({bool roundId})
-        > {
-  $$RoundPhotosTableTableManager(_$AppDatabase db, $RoundPhotosTable table)
-    : super(
-        TableManagerState(
-          db: db,
-          table: table,
-          createFilteringComposer: () =>
-              $$RoundPhotosTableFilterComposer($db: db, $table: table),
-          createOrderingComposer: () =>
-              $$RoundPhotosTableOrderingComposer($db: db, $table: table),
-          createComputedFieldComposer: () =>
-              $$RoundPhotosTableAnnotationComposer($db: db, $table: table),
-          updateCompanionCallback:
-              ({
-                Value<int> id = const Value.absent(),
-                Value<int> roundId = const Value.absent(),
-                Value<String> path = const Value.absent(),
-                Value<String?> caption = const Value.absent(),
-              }) => RoundPhotosCompanion(
-                id: id,
-                roundId: roundId,
-                path: path,
-                caption: caption,
-              ),
-          createCompanionCallback:
-              ({
-                Value<int> id = const Value.absent(),
-                required int roundId,
-                required String path,
-                Value<String?> caption = const Value.absent(),
-              }) => RoundPhotosCompanion.insert(
-                id: id,
-                roundId: roundId,
-                path: path,
-                caption: caption,
-              ),
-          withReferenceMapper: (p0) => p0
-              .map(
-                (e) => (
-                  e.readTable<$RoundPhotosTable, RoundPhoto>(table),
-                  $$RoundPhotosTableReferences(db, table, e),
-                ),
-              )
-              .toList(),
-          prefetchHooksCallback: ({roundId = false}) {
+          prefetchHooksCallback: ({courseId = false, bucketListRefs = false}) {
             return PrefetchHooks(
               db: db,
-              explicitlyWatchedTables: [],
+              explicitlyWatchedTables: [if (bucketListRefs) db.bucketList],
               addJoins:
                   <
                     T extends TableManagerState<
@@ -3541,15 +3525,15 @@ class $$RoundPhotosTableTableManager
                       dynamic
                     >
                   >(state) {
-                    if (roundId) {
+                    if (courseId) {
                       state =
                           state.withJoin(
                                 currentTable: table,
-                                currentColumn: table.roundId,
-                                referencedTable: $$RoundPhotosTableReferences
-                                    ._roundIdTable(db),
-                                referencedColumn: $$RoundPhotosTableReferences
-                                    ._roundIdTable(db)
+                                currentColumn: table.courseId,
+                                referencedTable: $$RoundsTableReferences
+                                    ._courseIdTable(db),
+                                referencedColumn: $$RoundsTableReferences
+                                    ._courseIdTable(db)
                                     .id,
                               )
                               as T;
@@ -3558,7 +3542,21 @@ class $$RoundPhotosTableTableManager
                     return state;
                   },
               getPrefetchedDataCallback: (items) async {
-                return [];
+                return [
+                  if (bucketListRefs)
+                    await $_getPrefetchedData<Round, $RoundsTable, BucketItem>(
+                      currentTable: table,
+                      referencedTable: $$RoundsTableReferences
+                          ._bucketListRefsTable(db),
+                      managerFromTypedResult: (p0) =>
+                          $$RoundsTableReferences(db, table, p0).bucketListRefs,
+                      referencedItemsForCurrentItem: (item, referencedItems) =>
+                          referencedItems.where(
+                            (e) => e.doneRoundId == item.id,
+                          ),
+                      typedResults: items,
+                    ),
+                ];
               },
             );
           },
@@ -3566,19 +3564,19 @@ class $$RoundPhotosTableTableManager
       );
 }
 
-typedef $$RoundPhotosTableProcessedTableManager =
+typedef $$RoundsTableProcessedTableManager =
     ProcessedTableManager<
       _$AppDatabase,
-      $RoundPhotosTable,
-      RoundPhoto,
-      $$RoundPhotosTableFilterComposer,
-      $$RoundPhotosTableOrderingComposer,
-      $$RoundPhotosTableAnnotationComposer,
-      $$RoundPhotosTableCreateCompanionBuilder,
-      $$RoundPhotosTableUpdateCompanionBuilder,
-      (RoundPhoto, $$RoundPhotosTableReferences),
-      RoundPhoto,
-      PrefetchHooks Function({bool roundId})
+      $RoundsTable,
+      Round,
+      $$RoundsTableFilterComposer,
+      $$RoundsTableOrderingComposer,
+      $$RoundsTableAnnotationComposer,
+      $$RoundsTableCreateCompanionBuilder,
+      $$RoundsTableUpdateCompanionBuilder,
+      (Round, $$RoundsTableReferences),
+      Round,
+      PrefetchHooks Function({bool courseId, bool bucketListRefs})
     >;
 typedef $$BucketListTableCreateCompanionBuilder =
     BucketListCompanion Function({
@@ -3977,16 +3975,369 @@ typedef $$BucketListTableProcessedTableManager =
       BucketItem,
       PrefetchHooks Function({bool courseId, bool doneRoundId})
     >;
+typedef $$AppJournalPhotosTableCreateCompanionBuilder =
+    AppJournalPhotosCompanion Function({
+      Value<int> id,
+      required int entryId,
+      required String path,
+      Value<String?> caption,
+    });
+typedef $$AppJournalPhotosTableUpdateCompanionBuilder =
+    AppJournalPhotosCompanion Function({
+      Value<int> id,
+      Value<int> entryId,
+      Value<String> path,
+      Value<String?> caption,
+    });
+
+class $$AppJournalPhotosTableFilterComposer
+    extends Composer<_$AppDatabase, $AppJournalPhotosTable> {
+  $$AppJournalPhotosTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get entryId => $composableBuilder(
+    column: $table.entryId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get path => $composableBuilder(
+    column: $table.path,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get caption => $composableBuilder(
+    column: $table.caption,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$AppJournalPhotosTableOrderingComposer
+    extends Composer<_$AppDatabase, $AppJournalPhotosTable> {
+  $$AppJournalPhotosTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get entryId => $composableBuilder(
+    column: $table.entryId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get path => $composableBuilder(
+    column: $table.path,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get caption => $composableBuilder(
+    column: $table.caption,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$AppJournalPhotosTableAnnotationComposer
+    extends Composer<_$AppDatabase, $AppJournalPhotosTable> {
+  $$AppJournalPhotosTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<int> get entryId =>
+      $composableBuilder(column: $table.entryId, builder: (column) => column);
+
+  GeneratedColumn<String> get path =>
+      $composableBuilder(column: $table.path, builder: (column) => column);
+
+  GeneratedColumn<String> get caption =>
+      $composableBuilder(column: $table.caption, builder: (column) => column);
+}
+
+class $$AppJournalPhotosTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $AppJournalPhotosTable,
+          JournalPhoto,
+          $$AppJournalPhotosTableFilterComposer,
+          $$AppJournalPhotosTableOrderingComposer,
+          $$AppJournalPhotosTableAnnotationComposer,
+          $$AppJournalPhotosTableCreateCompanionBuilder,
+          $$AppJournalPhotosTableUpdateCompanionBuilder,
+          (
+            JournalPhoto,
+            BaseReferences<_$AppDatabase, $AppJournalPhotosTable, JournalPhoto>,
+          ),
+          JournalPhoto,
+          PrefetchHooks Function()
+        > {
+  $$AppJournalPhotosTableTableManager(
+    _$AppDatabase db,
+    $AppJournalPhotosTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$AppJournalPhotosTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$AppJournalPhotosTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$AppJournalPhotosTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                Value<int> entryId = const Value.absent(),
+                Value<String> path = const Value.absent(),
+                Value<String?> caption = const Value.absent(),
+              }) => AppJournalPhotosCompanion(
+                id: id,
+                entryId: entryId,
+                path: path,
+                caption: caption,
+              ),
+          createCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                required int entryId,
+                required String path,
+                Value<String?> caption = const Value.absent(),
+              }) => AppJournalPhotosCompanion.insert(
+                id: id,
+                entryId: entryId,
+                path: path,
+                caption: caption,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable<$AppJournalPhotosTable, JournalPhoto>(table),
+                  BaseReferences<
+                    _$AppDatabase,
+                    $AppJournalPhotosTable,
+                    JournalPhoto
+                  >(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$AppJournalPhotosTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $AppJournalPhotosTable,
+      JournalPhoto,
+      $$AppJournalPhotosTableFilterComposer,
+      $$AppJournalPhotosTableOrderingComposer,
+      $$AppJournalPhotosTableAnnotationComposer,
+      $$AppJournalPhotosTableCreateCompanionBuilder,
+      $$AppJournalPhotosTableUpdateCompanionBuilder,
+      (
+        JournalPhoto,
+        BaseReferences<_$AppDatabase, $AppJournalPhotosTable, JournalPhoto>,
+      ),
+      JournalPhoto,
+      PrefetchHooks Function()
+    >;
+typedef $$AppJournalTagsTableCreateCompanionBuilder =
+    AppJournalTagsCompanion Function({
+      Value<int> id,
+      required int entryId,
+      required String tag,
+    });
+typedef $$AppJournalTagsTableUpdateCompanionBuilder =
+    AppJournalTagsCompanion Function({
+      Value<int> id,
+      Value<int> entryId,
+      Value<String> tag,
+    });
+
+class $$AppJournalTagsTableFilterComposer
+    extends Composer<_$AppDatabase, $AppJournalTagsTable> {
+  $$AppJournalTagsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get entryId => $composableBuilder(
+    column: $table.entryId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get tag => $composableBuilder(
+    column: $table.tag,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$AppJournalTagsTableOrderingComposer
+    extends Composer<_$AppDatabase, $AppJournalTagsTable> {
+  $$AppJournalTagsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get entryId => $composableBuilder(
+    column: $table.entryId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get tag => $composableBuilder(
+    column: $table.tag,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$AppJournalTagsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $AppJournalTagsTable> {
+  $$AppJournalTagsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<int> get entryId =>
+      $composableBuilder(column: $table.entryId, builder: (column) => column);
+
+  GeneratedColumn<String> get tag =>
+      $composableBuilder(column: $table.tag, builder: (column) => column);
+}
+
+class $$AppJournalTagsTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $AppJournalTagsTable,
+          JournalTag,
+          $$AppJournalTagsTableFilterComposer,
+          $$AppJournalTagsTableOrderingComposer,
+          $$AppJournalTagsTableAnnotationComposer,
+          $$AppJournalTagsTableCreateCompanionBuilder,
+          $$AppJournalTagsTableUpdateCompanionBuilder,
+          (
+            JournalTag,
+            BaseReferences<_$AppDatabase, $AppJournalTagsTable, JournalTag>,
+          ),
+          JournalTag,
+          PrefetchHooks Function()
+        > {
+  $$AppJournalTagsTableTableManager(
+    _$AppDatabase db,
+    $AppJournalTagsTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$AppJournalTagsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$AppJournalTagsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$AppJournalTagsTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                Value<int> entryId = const Value.absent(),
+                Value<String> tag = const Value.absent(),
+              }) => AppJournalTagsCompanion(id: id, entryId: entryId, tag: tag),
+          createCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                required int entryId,
+                required String tag,
+              }) => AppJournalTagsCompanion.insert(
+                id: id,
+                entryId: entryId,
+                tag: tag,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable<$AppJournalTagsTable, JournalTag>(table),
+                  BaseReferences<
+                    _$AppDatabase,
+                    $AppJournalTagsTable,
+                    JournalTag
+                  >(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$AppJournalTagsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $AppJournalTagsTable,
+      JournalTag,
+      $$AppJournalTagsTableFilterComposer,
+      $$AppJournalTagsTableOrderingComposer,
+      $$AppJournalTagsTableAnnotationComposer,
+      $$AppJournalTagsTableCreateCompanionBuilder,
+      $$AppJournalTagsTableUpdateCompanionBuilder,
+      (
+        JournalTag,
+        BaseReferences<_$AppDatabase, $AppJournalTagsTable, JournalTag>,
+      ),
+      JournalTag,
+      PrefetchHooks Function()
+    >;
 
 class $AppDatabaseManager {
   final _$AppDatabase _db;
   $AppDatabaseManager(this._db);
   $$CoursesTableTableManager get courses =>
       $$CoursesTableTableManager(_db, _db.courses);
+  $$AppJournalEntriesTableTableManager get appJournalEntries =>
+      $$AppJournalEntriesTableTableManager(_db, _db.appJournalEntries);
   $$RoundsTableTableManager get rounds =>
       $$RoundsTableTableManager(_db, _db.rounds);
-  $$RoundPhotosTableTableManager get roundPhotos =>
-      $$RoundPhotosTableTableManager(_db, _db.roundPhotos);
   $$BucketListTableTableManager get bucketList =>
       $$BucketListTableTableManager(_db, _db.bucketList);
+  $$AppJournalPhotosTableTableManager get appJournalPhotos =>
+      $$AppJournalPhotosTableTableManager(_db, _db.appJournalPhotos);
+  $$AppJournalTagsTableTableManager get appJournalTags =>
+      $$AppJournalTagsTableTableManager(_db, _db.appJournalTags);
 }

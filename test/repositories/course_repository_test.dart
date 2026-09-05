@@ -61,7 +61,7 @@ void main() {
 
   test('watchStats computes first/last played and best score', () async {
     final id = await repo.createCourse(courseDraft());
-    final rounds = RoundRepository(db);
+    final rounds = RoundRepository(db, journal: db.journal());
     await rounds.createRound(
         id, roundDraft(date: DateTime(2024, 5, 1), totalScore: 92));
     await rounds.createRound(
@@ -97,7 +97,7 @@ void main() {
 
   test('deleteCourse cascades its rounds', () async {
     final id = await repo.createCourse(courseDraft());
-    await RoundRepository(db).createRound(id, roundDraft());
+    await RoundRepository(db, journal: db.journal()).createRound(id, roundDraft());
 
     await repo.deleteCourse(id);
 

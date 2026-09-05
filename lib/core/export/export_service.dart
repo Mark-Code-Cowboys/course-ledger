@@ -10,11 +10,14 @@ import '../utils/labels.dart';
 /// Writes exports to temp files and hands them to the share sheet.
 /// The temp directory is injected so tests stay plugin-free.
 class ExportService {
-  ExportService(this._db, this._share, this._tempDir);
+  ExportService(this._db, this._share, this._tempDir,
+      {PhotoService? photos})
+      : _photos = photos; // ignore: prefer_initializing_formals
 
   final AppDatabase _db;
   final ShareLauncher _share;
   final Future<Directory> Function() _tempDir;
+  final PhotoService? _photos;
 
   static String _stamp(DateTime d) =>
       '${d.year.toString().padLeft(4, '0')}-'
@@ -29,6 +32,9 @@ class ExportService {
     final rounds = await (_db.select(_db.rounds)
           ..orderBy([(t) => OrderingTerm.asc(t.date)]))
         .get();
+    final entries = {
+      for (final e in await _db.select(_db.appJournalEntries).get()) e.id: e,
+    };
 
     final csv = buildCsv([
       [
@@ -49,8 +55,8 @@ class ExportService {
           r.walkedOrCart?.label,
           r.partners,
           r.weather,
-          r.rating,
-          r.notes,
+          entries[r.journalEntryId]?.rating,
+          entries[r.journalEntryId]?.notes,
         ],
     ]);
 
@@ -64,10 +70,13 @@ class ExportService {
 
   /// The full ledger as one zip: export JSON plus round photo files.
   Future<File> shareBackup({required int lifetimeCourses, DateTime? now}) async {
+    final store = _photos;
     final bytes = buildBackupArchive(
       exportData: await buildExportData(_db,
           lifetimeCourses: lifetimeCourses, now: now),
-      media: await collectRoundPhotoMedia(_db),
+      media: store == null
+          ? const {}
+          : await _db.journal().collectMedia(store),
     );
     final stamp = _stamp(now ?? DateTime.now());
     final file =

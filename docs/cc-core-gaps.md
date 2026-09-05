@@ -13,7 +13,7 @@ number format). Empty barrels: `journal/`, `trends/`, `onboarding/`,
 
 | Phase | Needs | cc_core module | Status |
 | --- | --- | --- | --- |
-| A | Round notes/photos as journal entries (entry/rating/photo models, Drift repo) | `journal/` | DESIGN PROPOSAL in CC_Core/docs/journal-module-design.md (recommends minimal photo-seam scope, no shipped-app migrations) — awaiting the call |
+| A | Round notes/photos as journal entries (entry/rating/photo models, Drift repo) | `journal/` | DONE in cc_core 0.12.0 — option B chosen (full core tables, for the coming fleet). Course Ledger is the proving consumer: schema v2 migration moves notes/rating/round_photos into the journal, tested against a real v1 db and verified live on the emulator. Table Encore's adoption is a separate pass (dish-level double ratings + single-photo column need their own design read). |
 | D | Scorecard photo scan → transcribe → confirm | `scan/` | DONE in cc_core 0.8.0 |
 | D | Shoebox batch import (shoot 20 cards → review list → bulk insert) | `notebook_import/` | DONE in cc_core 0.8.0 |
 | E | Courses/yr, rounds/yr, score trend line, counters | `trends/` | DONE in cc_core 0.9.0 (YearlyBars, SimpleLineChart, TrendGate; Trace Elements heatmap extraction still open) |
@@ -27,10 +27,6 @@ number format). Empty barrels: `journal/`, `trends/`, `onboarding/`,
   Table Encore has `SEED_DEV_DATA` ad hoc; Course Ledger now has
   `DEMO_SEED` following the same shape. Worth one blessed name in core
   docs when a third app appears.
-- **Photo file store seam**: Table Encore's `PhotoFileStore` (repo discards
-  files when rows referencing them go) is being re-needed here for round
-  photos (Phase B composer). Third consumer of the pattern = extract into
-  cc_core (`journal/` or a small `photos/` module).
 - **Single-entry share/exchange** (`io/`): friends and golf parties
   sharing a scorecard scan — nothing exists yet (the scanned card image
   isn't even persisted; only whole-book CSV/backup export ships).
@@ -49,6 +45,14 @@ number format). Empty barrels: `journal/`, `trends/`, `onboarding/`,
   to try, trails to ride) — flag for review after Phase B proves the shape.
 
 ## Done
+
+- **journal/ module** (cc_core 0.12.0, option B): shared entries/photos/
+  tags tables with @UseRowClass row types (apps register thin local
+  subclasses — drift can't analyze cross-package table classes, raw-SQL
+  FKs carry the constraints), generic JournalRepository, the
+  PhotoFileStore/PhotoService seam (closing that candidate), and the
+  PhotoAttachmentStrip. Course Ledger v2: journal-backed rounds, photo
+  capture in the composer, backup format 2 with format-1 restore.
 
 - **theme/ module + countHeadline** (cc_core 0.11.0): CcThemeTokens with
   ccLightTheme/ccDarkTheme; countHeadline/CountedSubject in trends.
