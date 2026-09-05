@@ -50,6 +50,13 @@ Hitch Post drove four extractions mid-build (RatingStars 0.14.0,
 FreeTierCounter 0.15.0, parseLooseDate(s) + CsvMappingScreen
 0.16.0/0.16.1). What it left behind as now-visible duplicates:
 
+→ ALL FIVE CLOSED in cc_core 0.17.0 (2026-09-05): SharePlusLauncher
+(io, share_plus dep moved into core), dumpJournalTables/
+restoreJournalTables on JournalRepository (TE's keys checked — all
+three apps already write the identical shape), ProTeaser (paywall),
+captureDocumentPages (scan), titleCaseShouted (text). Apps shed their
+local copies on next touch; the watch list below stays open.
+
 - **`SharePlusLauncher` impl** (`io/`): the ~25-line share_plus wrapper
   is copy-paste identical in Course Ledger and Hitch Post — cc_core has
   the seam + fake but not the impl, only to keep the share_plus dep out
