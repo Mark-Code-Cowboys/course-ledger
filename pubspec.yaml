@@ -12,7 +12,7 @@ dependencies:
   cc_core:
     git:
       url: https://github.com/Mark-Code-Cowboys/cc_core.git
-      ref: v0.10.0
+      ref: v0.11.0
   drift: ^2.34.3
   drift_flutter: ^0.3.1
   # CSV pick for the import mapper (SAF/native dialogs, no permissions).

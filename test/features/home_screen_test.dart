@@ -88,7 +88,7 @@ void main() {
         ['Cedar', 'Alpha', 'Beta', 'Nomad']);
   });
 
-  test('countHeadline handles singulars and missing states', () {
+  test('ledgerHeadline handles singulars and missing states', () {
     CourseSummary s(String name, String? state) => CourseSummary(
           Course(
             id: name.hashCode,
@@ -101,9 +101,9 @@ void main() {
           ),
           roundCount: 0,
         );
-    expect(countHeadline([s('One', 'MI')]), '1 course · 1 state');
-    expect(countHeadline([s('One', null)]), '1 course');
-    expect(countHeadline([s('One', 'MI'), s('Two', 'MI'), s('Three', 'OH')]),
+    expect(ledgerHeadline([s('One', 'MI')]), '1 course · 1 state');
+    expect(ledgerHeadline([s('One', null)]), '1 course');
+    expect(ledgerHeadline([s('One', 'MI'), s('Two', 'MI'), s('Three', 'OH')]),
         '3 courses · 2 states');
   });
 }

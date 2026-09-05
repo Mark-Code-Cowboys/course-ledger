@@ -1,3 +1,4 @@
+import 'package:cc_core/cc_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -42,18 +43,18 @@ List<CourseSummary> sortSummaries(
   return sorted;
 }
 
-/// "47 courses · 12 states" — the ledger's proudest line.
-String countHeadline(List<CourseSummary> summaries) {
+/// "47 courses · 12 states" — the ledger's proudest line, via cc_core's
+/// countHeadline (zero states drop off; the course count always shows).
+String ledgerHeadline(List<CourseSummary> summaries) {
   final states = summaries
       .map((s) => s.course.state)
       .whereType<String>()
       .toSet()
       .length;
-  final courses = summaries.length;
-  final courseWord = courses == 1 ? 'course' : 'courses';
-  if (states == 0) return '$courses $courseWord';
-  final stateWord = states == 1 ? 'state' : 'states';
-  return '$courses $courseWord · $states $stateWord';
+  return countHeadline([
+    CountedSubject(summaries.length, 'course'),
+    CountedSubject(states, 'state'),
+  ]);
 }
 
 class HomeScreen extends ConsumerStatefulWidget {
@@ -122,7 +123,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       children: [
         Padding(
           padding: const EdgeInsets.fromLTRB(16, 16, 16, 4),
-          child: Text(countHeadline(list),
+          child: Text(ledgerHeadline(list),
               style: theme.textTheme.headlineSmall),
         ),
         // Invisible for Pro owners; taps open the paywall.
