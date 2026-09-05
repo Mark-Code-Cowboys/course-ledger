@@ -9,6 +9,7 @@ import '../home/home_screen.dart';
 import '../monetization/free_limit.dart';
 import '../monetization/monetization_providers.dart';
 import '../monetization/paywall_sheet.dart';
+import '../trends/trends_screen.dart';
 
 class HomeShell extends ConsumerStatefulWidget {
   const HomeShell({super.key});
@@ -20,7 +21,7 @@ class HomeShell extends ConsumerStatefulWidget {
 class _HomeShellState extends ConsumerState<HomeShell> {
   var _index = 0;
 
-  static const _screens = [HomeScreen(), BucketListScreen()];
+  static const _screens = [HomeScreen(), BucketListScreen(), TrendsScreen()];
 
   /// The one gated action in the app: adding a course past the free
   /// five (lifetime creations, so deletes don't refund slots) opens
@@ -49,17 +50,19 @@ class _HomeShellState extends ConsumerState<HomeShell> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: _screens[_index],
-      floatingActionButton: _index == 0
-          ? FloatingActionButton.extended(
-              onPressed: _addCourse,
-              icon: const Icon(Icons.add),
-              label: const Text('Add course'),
-            )
-          : FloatingActionButton.extended(
-              onPressed: () => showAddBucketItemDialog(context, ref),
-              icon: const Icon(Icons.add),
-              label: const Text('Add a wish'),
-            ),
+      floatingActionButton: switch (_index) {
+        0 => FloatingActionButton.extended(
+            onPressed: _addCourse,
+            icon: const Icon(Icons.add),
+            label: const Text('Add course'),
+          ),
+        1 => FloatingActionButton.extended(
+            onPressed: () => showAddBucketItemDialog(context, ref),
+            icon: const Icon(Icons.add),
+            label: const Text('Add a wish'),
+          ),
+        _ => null,
+      },
       bottomNavigationBar: NavigationBar(
         selectedIndex: _index,
         onDestinationSelected: (i) => setState(() => _index = i),
@@ -68,6 +71,8 @@ class _HomeShellState extends ConsumerState<HomeShell> {
               icon: Icon(Icons.menu_book_outlined), label: 'Courses'),
           NavigationDestination(
               icon: Icon(Icons.flag_outlined), label: 'Bucket list'),
+          NavigationDestination(
+              icon: Icon(Icons.insights_outlined), label: 'Trends'),
         ],
       ),
     );

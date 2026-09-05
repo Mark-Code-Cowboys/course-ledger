@@ -1,8 +1,10 @@
 import 'package:cc_core/cc_core.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:path_provider/path_provider.dart';
 
 import 'app.dart';
+import 'core/export/share_plus_launcher.dart';
 import 'data/database/app_database.dart';
 import 'data/providers.dart';
 import 'features/scan_import/scan_import_providers.dart';
@@ -19,6 +21,8 @@ void main() {
             .overrideWithValue(MlKitDocumentScanService()),
         textRecognitionServiceProvider
             .overrideWithValue(MlKitTextRecognitionService()),
+        shareLauncherProvider.overrideWithValue(SharePlusLauncher()),
+        tempDirProvider.overrideWithValue(getTemporaryDirectory),
       ],
       child: const CourseLedgerApp(),
     ),

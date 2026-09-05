@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:cc_core/cc_core.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -57,4 +59,21 @@ final roundsForCourseProvider =
 
 final bucketItemsProvider = StreamProvider<List<BucketItem>>(
   (ref) => ref.watch(bucketListRepositoryProvider).watchItems(),
+);
+
+/// Every round in the ledger, for the trends aggregates.
+final allRoundsProvider = StreamProvider<List<Round>>(
+  (ref) => ref.watch(roundRepositoryProvider).watchAllRounds(),
+);
+
+/// Overridden in main() with SharePlusLauncher, and in tests with
+/// cc_core's FakeShareLauncher.
+final shareLauncherProvider = Provider<ShareLauncher>(
+  (ref) => throw UnimplementedError('shareLauncherProvider must be overridden'),
+);
+
+/// Overridden in main() with path_provider's temp dir, and in tests
+/// with a system temp directory.
+final tempDirProvider = Provider<Future<Directory> Function()>(
+  (ref) => throw UnimplementedError('tempDirProvider must be overridden'),
 );

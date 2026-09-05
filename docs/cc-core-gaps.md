@@ -16,21 +16,16 @@ number format). Empty barrels: `journal/`, `trends/`, `onboarding/`,
 | A | Round notes/photos as journal entries (entry/rating/photo models, Drift repo) | `journal/` | empty — and Table Encore has no journal tables to extract either (its notes/photos are domain-table columns), so factory Phase 4 is a design job across both apps. Phase A shipped app-local `rounds.notes` + `round_photos`, shaped like the donor for a later lift. |
 | D | Scorecard photo scan → transcribe → confirm | `scan/` | DONE in cc_core 0.8.0 |
 | D | Shoebox batch import (shoot 20 cards → review list → bulk insert) | `notebook_import/` | DONE in cc_core 0.8.0 |
-| E | Courses/yr, rounds/yr, score trend line, counters | `trends/` | empty (factory Phase 4) |
-| E | Export/backup archive behind entitlement | `io/` | README promises CSV/JSON export + zip backup/restore, but only cloud backup is coded (factory Phase 3 partially shipped) |
+| E | Courses/yr, rounds/yr, score trend line, counters | `trends/` | DONE in cc_core 0.9.0 (YearlyBars, SimpleLineChart, TrendGate; Trace Elements heatmap extraction still open) |
+| E | Export/backup archive behind entitlement | `io/` | DONE in cc_core 0.9.0 (backup archive, buildCsv, ShareLauncher seam) |
 | F | First-run flow with positioning line, consent screen | `onboarding/` | empty (factory Phase 6) |
 | 0 | Base theme from per-app tokens (`CcThemeTokens`) | `theme/` | empty — `lib/core/theme/app_theme.dart` here is a hand copy of Table Encore's `AppTheme` shape; third copy = extract |
 
 ## New generic candidates surfaced by this app
 
-- **Coverage map widget** (`trends/`): Phase E "played map" — region fill
-  (states/countries visited) + optional pins. Generic "where have I done X"
-  map; reusable by any travel-ish ledger (Hitch Post, Loadbook).
 - **Count headline** (`trends/` or `text/`): "47 courses · 12 states" —
   a generic multi-count stat headline formatter/widget for Home screens.
-- **Minimum-data trend guard** (`trends/`): "trend line only if ≥5 scored
-  rounds" — a generic `TrendGate(minPoints)` so sparse data renders a
-  nudge instead of a junk chart. Anti-stats-cosplay is house positioning.
+  (Still app-side in home_screen.dart.)
 - **DEMO_SEED seam**: `--dart-define=DEMO_SEED` screenshot-data hook —
   Table Encore has `SEED_DEV_DATA` ad hoc; worth one blessed pattern in
   core docs or a tiny helper.
@@ -43,6 +38,15 @@ number format). Empty barrels: `journal/`, `trends/`, `onboarding/`,
   to try, trails to ride) — flag for review after Phase B proves the shape.
 
 ## Done
+
+- **trends/ first contents** (cc_core 0.9.0, Phase E): TrendGate
+  (anti-stats-cosplay minimum-data guard), YearlyBars, SimpleLineChart,
+  RegionTileGrid + usStateTiles (the coverage-map candidate, realized
+  as an offline tile cartogram — course *pins* deferred until a lat/lon
+  capture UI exists). Trace Elements heatmap extraction still open.
+- **io export/backup** (cc_core 0.9.0, Phase E): single-file backup
+  archive lifted from Table Encore (entry names parameterized),
+  buildCsv encoder, ShareLauncher seam + fake.
 
 - **scan/ + notebook_import/ modules** (cc_core 0.8.0, Phase D):
   extracted from Table Encore's OCR core — OcrLine/mergeOcrRows,

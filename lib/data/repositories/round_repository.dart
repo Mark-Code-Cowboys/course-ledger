@@ -63,6 +63,13 @@ class RoundRepository {
     return query.watch().switchMap(_withPhotos);
   }
 
+  /// Every round in the ledger, oldest first — trends aggregates.
+  Stream<List<Round>> watchAllRounds() {
+    final query = _db.select(_db.rounds)
+      ..orderBy([(r) => OrderingTerm.asc(r.date)]);
+    return query.watch();
+  }
+
   Stream<RoundWithPhotos?> watchRound(int roundId) {
     final query = _db.select(_db.rounds)..where((r) => r.id.equals(roundId));
     return query
