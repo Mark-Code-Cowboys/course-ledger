@@ -18,7 +18,7 @@ number format). Empty barrels: `journal/`, `trends/`, `onboarding/`,
 | D | Shoebox batch import (shoot 20 cards → review list → bulk insert) | `notebook_import/` | DONE in cc_core 0.8.0 |
 | E | Courses/yr, rounds/yr, score trend line, counters | `trends/` | DONE in cc_core 0.9.0 (YearlyBars, SimpleLineChart, TrendGate; Trace Elements heatmap extraction still open) |
 | E | Export/backup archive behind entitlement | `io/` | DONE in cc_core 0.9.0 (backup archive, buildCsv, ShareLauncher seam) |
-| F | First-run flow with positioning line, consent screen | `onboarding/` | empty (factory Phase 6) |
+| F | First-run flow with positioning line, consent screen | `onboarding/` | DONE in cc_core 0.10.0 (FirstRunFlag + OnboardingScaffold, designed fresh — no donor flow existed) |
 | 0 | Base theme from per-app tokens (`CcThemeTokens`) | `theme/` | empty — `lib/core/theme/app_theme.dart` here is a hand copy of Table Encore's `AppTheme` shape; third copy = extract |
 
 ## New generic candidates surfaced by this app
@@ -27,8 +27,9 @@ number format). Empty barrels: `journal/`, `trends/`, `onboarding/`,
   a generic multi-count stat headline formatter/widget for Home screens.
   (Still app-side in home_screen.dart.)
 - **DEMO_SEED seam**: `--dart-define=DEMO_SEED` screenshot-data hook —
-  Table Encore has `SEED_DEV_DATA` ad hoc; worth one blessed pattern in
-  core docs or a tiny helper.
+  Table Encore has `SEED_DEV_DATA` ad hoc; Course Ledger now has
+  `DEMO_SEED` following the same shape. Worth one blessed name in core
+  docs when a third app appears.
 - **Photo file store seam**: Table Encore's `PhotoFileStore` (repo discards
   files when rows referencing them go) is being re-needed here for round
   photos (Phase B composer). Third consumer of the pattern = extract into
@@ -38,6 +39,11 @@ number format). Empty barrels: `journal/`, `trends/`, `onboarding/`,
   to try, trails to ride) — flag for review after Phase B proves the shape.
 
 ## Done
+
+- **onboarding/ module** (cc_core 0.10.0, Phase F): FirstRunFlag +
+  OnboardingScaffold with the kPrivacyBoilerplate promise. Designed
+  fresh with Course Ledger (Table Encore has no first-run flow), so the
+  API may shift when a second consumer adopts it.
 
 - **trends/ first contents** (cc_core 0.9.0, Phase E): TrendGate
   (anti-stats-cosplay minimum-data guard), YearlyBars, SimpleLineChart,

@@ -6,12 +6,18 @@ import 'package:path_provider/path_provider.dart';
 import 'app.dart';
 import 'core/export/share_plus_launcher.dart';
 import 'data/database/app_database.dart';
+import 'data/database/seed.dart';
 import 'data/providers.dart';
 import 'features/scan_import/scan_import_providers.dart';
 
-void main() {
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   final db = AppDatabase.open();
+
+  // Screenshot data: `flutter run --dart-define=DEMO_SEED=true`
+  if (const bool.fromEnvironment('DEMO_SEED')) {
+    await seedDemoData(db);
+  }
 
   runApp(
     ProviderScope(

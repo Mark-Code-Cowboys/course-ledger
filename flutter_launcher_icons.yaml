@@ -1,0 +1,11 @@
+# Launcher icon generation: dart run flutter_launcher_icons
+# Source art is generated (see docs in the Phase F commit); fairway
+# green #1E5631 ground, open ledger with a planted flag.
+flutter_launcher_icons:
+  android: true
+  ios: true
+  remove_alpha_ios: true
+  image_path: "assets/icon/icon.png"
+  adaptive_icon_background: "#1E5631"
+  adaptive_icon_foreground: "assets/icon/icon_foreground.png"
+  min_sdk_android: 26
