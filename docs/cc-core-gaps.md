@@ -91,7 +91,12 @@ number format). Empty barrels: `journal/`, `trends/`, `onboarding/`,
   Table Encore's `core/ocr/` is now a duplicate to migrate off.
 - **CSV import parsing** (`io/` in cc_core 0.8.0, Phase D):
   parseCsv/CsvDocument. The column-mapping *screen* stayed app-side —
-  extract once a second app builds one.
+  extract once a second app builds one. → DONE in cc_core 0.16.0
+  (Hitch Post Phase D was the second consumer): `CsvMappingScreen` +
+  `CsvField`/`guessCsvMapping`. Also extracted then: `parseLooseDate`
+  (+ `parseLooseDates` for range rows) into `text/`. Course Ledger
+  adopts both on its next touch (csv_import_screen.dart +
+  core/utils/dates.dart keep local copies until then).
 
 - **`LifetimeTally`** (cc_core 0.7.0, Phase C): extracted from Table
   Encore's `RestaurantTally` when Course Ledger became the second
