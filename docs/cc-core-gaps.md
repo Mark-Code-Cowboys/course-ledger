@@ -13,7 +13,7 @@ number format). Empty barrels: `journal/`, `trends/`, `onboarding/`,
 
 | Phase | Needs | cc_core module | Status |
 | --- | --- | --- | --- |
-| A | Round notes/photos as journal entries (entry/rating/photo models, Drift repo) | `journal/` | DONE in cc_core 0.12.0 — option B chosen (full core tables, for the coming fleet). Course Ledger is the proving consumer: schema v2 migration moves notes/rating/round_photos into the journal, tested against a real v1 db and verified live on the emulator. Table Encore's adoption is a separate pass (dish-level double ratings + single-photo column need their own design read). |
+| A | Round notes/photos as journal entries (entry/rating/photo models, Drift repo) | `journal/` | DONE in cc_core 0.12.0 — option B chosen (full core tables, for the coming fleet). Course Ledger is the proving consumer: schema v2 migration moves notes/rating/round_photos into the journal, tested against a real v1 db and verified live on the emulator. Table Encore adopted at the visit level 2026-09-05 (schema v3, migration tested; dish-level explicitly settled as domain design — see TableEncore/docs/journal-adoption-read.md). No open adoption items remain across the fleet. |
 | D | Scorecard photo scan → transcribe → confirm | `scan/` | DONE in cc_core 0.8.0 |
 | D | Shoebox batch import (shoot 20 cards → review list → bulk insert) | `notebook_import/` | DONE in cc_core 0.8.0 |
 | E | Courses/yr, rounds/yr, score trend line, counters | `trends/` | DONE in cc_core 0.9.0; Trace Elements heatmap extraction landed in 0.13.0 (CalendarMonthGrid + TrendWindowNav) — factory Phase 4 fully closed |
