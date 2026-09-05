@@ -1,3 +1,4 @@
+import 'package:cc_core/cc_core.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:course_ledger/data/database/app_database.dart';
@@ -72,6 +73,26 @@ void main() {
     expect(stats.firstPlayed, DateTime(2024, 5, 1));
     expect(stats.lastPlayed, DateTime(2026, 8, 9));
     expect(stats.bestScore, 88);
+  });
+
+  test('deleting a course never refunds a free-tier slot', () async {
+    final tally = LifetimeTally(InMemoryKeyValueStore(),
+        key: 'courses_created_lifetime');
+    addTearDown(tally.dispose);
+    final tallied = CourseRepository(db, tally: tally);
+
+    final ids = <int>[];
+    for (var i = 0; i < 5; i++) {
+      ids.add(await tallied.createCourse(courseDraft(name: 'Course $i')));
+    }
+    expect(await tallied.lifetimeCreated(), 5);
+
+    await tallied.deleteCourse(ids.first);
+    expect(await tallied.count(), 4);
+    expect(await tallied.lifetimeCreated(), 5); // the slot stays spent
+
+    await tallied.createCourse(courseDraft(name: 'Course 5'));
+    expect(await tallied.lifetimeCreated(), 6);
   });
 
   test('deleteCourse cascades its rounds', () async {

@@ -5,7 +5,7 @@ import '../../core/utils/dates.dart';
 import '../../data/providers.dart';
 import '../../data/repositories/course_repository.dart';
 import '../courses/course_detail_screen.dart';
-import '../monetization/free_limit.dart';
+import '../monetization/free_tier_counter.dart';
 
 enum CourseSort { az, byState, byRecent }
 
@@ -108,7 +108,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   Widget _list(BuildContext context, List<CourseSummary> list) {
     final theme = Theme.of(context);
     final sorted = sortSummaries(list, _sort);
-    final usage = courseFreeLimit.usage(list.length);
     return ListView(
       children: [
         Padding(
@@ -116,17 +115,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           child: Text(countHeadline(list),
               style: theme.textTheme.headlineSmall),
         ),
-        Padding(
-          padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
-          // Phase C hides the chip for entitled users.
-          child: Align(
-            alignment: Alignment.centerLeft,
-            child: Chip(
-              avatar: const Icon(Icons.bookmark_border, size: 18),
-              label: Text(usage.label),
-            ),
-          ),
-        ),
+        // Invisible for Pro owners; taps open the paywall.
+        const FreeTierCounter(margin: EdgeInsets.fromLTRB(16, 0, 16, 8)),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
           child: SegmentedButton<CourseSort>(

@@ -1,3 +1,4 @@
+import 'package:cc_core/cc_core.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'database/app_database.dart';
@@ -11,8 +12,21 @@ final databaseProvider = Provider<AppDatabase>(
   (ref) => throw UnimplementedError('databaseProvider must be overridden'),
 );
 
+/// Overridden in tests with [InMemoryKeyValueStore].
+final kvStoreProvider = Provider<KeyValueStore>((ref) => SharedPrefsStore());
+
+/// Courses ever created on this device; feeds the free tier so a slot
+/// can't be recycled by delete-and-re-add.
+final courseTallyProvider = Provider<LifetimeTally>((ref) {
+  final tally = LifetimeTally(ref.watch(kvStoreProvider),
+      key: 'courses_created_lifetime');
+  ref.onDispose(tally.dispose);
+  return tally;
+});
+
 final courseRepositoryProvider = Provider<CourseRepository>(
-  (ref) => CourseRepository(ref.watch(databaseProvider)),
+  (ref) => CourseRepository(ref.watch(databaseProvider),
+      tally: ref.watch(courseTallyProvider)),
 );
 
 final roundRepositoryProvider = Provider<RoundRepository>(

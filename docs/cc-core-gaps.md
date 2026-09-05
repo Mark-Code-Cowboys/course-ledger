@@ -47,4 +47,12 @@ number format). Empty barrels: `journal/`, `trends/`, `onboarding/`,
 
 ## Done
 
-(nothing yet)
+- **`LifetimeTally`** (cc_core 0.7.0, Phase C): extracted from Table
+  Encore's `RestaurantTally` when Course Ledger became the second
+  consumer — free tier counts lifetime creations under an injected
+  key. Table Encore can adopt it with its existing
+  `restaurants_created_lifetime` key.
+- **`PaywallSheetScaffold` scrolls** (cc_core 0.7.0, Phase C): content
+  taller than the sheet (long benefit lists, small screens) scrolled
+  instead of overflowing — found when Course Ledger's three-benefit
+  sheet overflowed by 80px.

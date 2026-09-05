@@ -95,7 +95,7 @@ packages:
       path: "../CC_Core"
       relative: true
     source: path
-    version: "0.6.1"
+    version: "0.7.0"
   characters:
     dependency: transitive
     description:

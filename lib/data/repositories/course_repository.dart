@@ -1,4 +1,8 @@
+import 'dart:math';
+
+import 'package:cc_core/cc_core.dart';
 import 'package:drift/drift.dart';
+import 'package:stream_transform/stream_transform.dart';
 
 import '../database/app_database.dart';
 
@@ -58,9 +62,11 @@ class CourseDraft {
 }
 
 class CourseRepository {
-  CourseRepository(this._db);
+  CourseRepository(this._db, {LifetimeTally? tally})
+      : _tally = tally; // ignore: prefer_initializing_formals
 
   final AppDatabase _db;
+  final LifetimeTally? _tally;
 
   /// All courses A-Z; by-state and by-recent orderings come with the
   /// Home screen (Phase B).
@@ -124,8 +130,25 @@ class CourseRepository {
         ));
   }
 
-  Future<int> createCourse(CourseDraft d) {
-    return _db.into(_db.courses).insert(_companion(d));
+  Future<int> createCourse(CourseDraft d) async {
+    final id = await _db.into(_db.courses).insert(_companion(d));
+    await _tally?.recordCreated(liveCount: await count());
+    return id;
+  }
+
+  /// Courses ever created on this device: the tally, but never below
+  /// the live row count (pre-tally installs, backup restores).
+  Future<int> lifetimeCreated() async {
+    final live = await count();
+    final tallied = await _tally?.value() ?? 0;
+    return max(live, tallied);
+  }
+
+  /// Live [lifetimeCreated], ticking on creates and on row changes.
+  Stream<int> watchLifetimeCreated() {
+    final live = watchCourses().map((rows) => rows.length);
+    final tallied = _tally?.watch() ?? Stream.value(0);
+    return live.combineLatest(tallied, (int a, int b) => max(a, b));
   }
 
   Future<void> updateCourse(int id, CourseDraft d) {

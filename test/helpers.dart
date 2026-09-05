@@ -3,18 +3,31 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import 'package:cc_core/cc_core.dart';
 import 'package:course_ledger/core/theme/app_theme.dart';
 import 'package:course_ledger/data/database/app_database.dart';
 import 'package:course_ledger/data/providers.dart';
 import 'package:course_ledger/data/repositories/course_repository.dart';
 import 'package:course_ledger/data/repositories/round_repository.dart';
+import 'package:course_ledger/features/monetization/monetization_providers.dart';
 import 'package:course_ledger/features/shell/home_shell.dart';
 
 AppDatabase makeTestDb() => AppDatabase(NativeDatabase.memory());
 
-/// The app wired to an in-memory database; [home] defaults to the shell.
-Widget testApp({required AppDatabase db, Widget? home}) => ProviderScope(
-      overrides: [databaseProvider.overrideWithValue(db)],
+/// The app wired to an in-memory database and a fake store; [home]
+/// defaults to the shell and [entitlements] to a free-tier user.
+Widget testApp({
+  required AppDatabase db,
+  EntitlementService? entitlements,
+  Widget? home,
+}) =>
+    ProviderScope(
+      overrides: [
+        databaseProvider.overrideWithValue(db),
+        kvStoreProvider.overrideWithValue(InMemoryKeyValueStore()),
+        entitlementServiceProvider
+            .overrideWithValue(entitlements ?? FakeEntitlementService()),
+      ],
       child: MaterialApp(
         theme: AppTheme.light(),
         home: home ?? const HomeShell(),
