@@ -13,7 +13,7 @@ number format). Empty barrels: `journal/`, `trends/`, `onboarding/`,
 
 | Phase | Needs | cc_core module | Status |
 | --- | --- | --- | --- |
-| A | Round notes/photos as journal entries (entry/rating/photo models, Drift repo) | `journal/` | empty — extraction from Table Encore not done (factory Phase 4) |
+| A | Round notes/photos as journal entries (entry/rating/photo models, Drift repo) | `journal/` | empty — and Table Encore has no journal tables to extract either (its notes/photos are domain-table columns), so factory Phase 4 is a design job across both apps. Phase A shipped app-local `rounds.notes` + `round_photos`, shaped like the donor for a later lift. |
 | D | Scorecard photo scan → transcribe → confirm | `scan/` | empty (factory Phase 5) |
 | D | Shoebox batch import (shoot 20 cards → review list → bulk insert) | `notebook_import/` | empty (factory Phase 5) |
 | E | Courses/yr, rounds/yr, score trend line, counters | `trends/` | empty (factory Phase 4) |
@@ -37,6 +37,10 @@ number format). Empty barrels: `journal/`, `trends/`, `onboarding/`,
 - **DEMO_SEED seam**: `--dart-define=DEMO_SEED` screenshot-data hook —
   Table Encore has `SEED_DEV_DATA` ad hoc; worth one blessed pattern in
   core docs or a tiny helper.
+- **Photo file store seam**: Table Encore's `PhotoFileStore` (repo discards
+  files when rows referencing them go) is being re-needed here for round
+  photos (Phase B composer). Third consumer of the pattern = extract into
+  cc_core (`journal/` or a small `photos/` module).
 - **Bucket list** (`journal/`?): courseId-XOR-freeText "want to do"
   list with done-linkage to a real entry. Feels generalizable (restaurants
   to try, trails to ride) — flag for review after Phase B proves the shape.
