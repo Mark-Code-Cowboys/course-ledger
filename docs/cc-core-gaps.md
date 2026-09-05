@@ -44,6 +44,52 @@ number format). Empty barrels: `journal/`, `trends/`, `onboarding/`,
   list with done-linkage to a real entry. Feels generalizable (restaurants
   to try, trails to ride) — flag for review after Phase B proves the shape.
 
+## New candidates surfaced by Hitch Post (2026-09-05, phases 0-G)
+
+Hitch Post drove four extractions mid-build (RatingStars 0.14.0,
+FreeTierCounter 0.15.0, parseLooseDate(s) + CsvMappingScreen
+0.16.0/0.16.1). What it left behind as now-visible duplicates:
+
+- **`SharePlusLauncher` impl** (`io/`): the ~25-line share_plus wrapper
+  is copy-paste identical in Course Ledger and Hitch Post — cc_core has
+  the seam + fake but not the impl, only to keep the share_plus dep out
+  of core. Every CC app ships the share sheet; move the impl into core
+  (dep and all) on the next core touch. 2 identical consumers.
+- **Journal-table backup blocks** (`journal/`): buildExportData's
+  entries/photos/tags dump and restore's RawValuesInsertable loops are
+  verbatim-identical in both apps' backup_service.dart. Candidate:
+  `dumpJournalTables(db)` / `restoreJournalTables(db, rows)` beside
+  `collectMedia`. Check Table Encore's pinned backup entry names fit
+  before extracting (3rd consumer would settle the API).
+- **Pro-teaser screen shape** (`paywall/`): icon + pitch + "See X Pro"
+  + divider + ungated "Restore a backup" — near-verbatim in both
+  trends screens. Riverpod-free scaffold candidate (app passes copy +
+  two callbacks). 2 consumers.
+- **Capture preamble** (`scan/`): the pro-gate → `scanAll`-or-picker
+  fallback block opens Course Ledger's shoebox and Hitch Post's
+  notebook + receipt flows (3 call sites). Candidate:
+  `captureDocumentPages(scanner, {limit})` — the paywall half stays
+  app-side (riverpod).
+- **`_titleCaseShouted`** (`text/`): shouted-print normalizer duplicated
+  in scorecard_parser and visit_page_parser. Trivial; take it along
+  with the next text/ touch.
+- **Watch list** (no action yet): `parseCostCents` (Hitch Post) vs
+  Table Encore's receipt cost logic — read TE before claiming a shared
+  money parser; `_StatChip` + a chips-wrap over CountedSubject; the
+  ExportService stamp/write/share shape.
+
+Fleet adoption debts (next touch of each repo):
+
+- Course Ledger: RatingStars, FreeTierCounter, parseLooseDate,
+  CsvMappingScreen (local copies still in place).
+- Table Encore: RatingStars, FreeTierCounter.
+- cc_template skeleton: journal registration boilerplate, the
+  AppRoot/firstRunSeen first-run gate, RatingStars/FreeTierCounter
+  usage examples — and the repo still needs its GitHub remote.
+
+Hitch Post's demo-seed device pass (2026-09-05) surfaced zero cc_core
+defects — first fleet app where bring-up + device pass found none.
+
 ## Done
 
 - **Trace Elements adoption pass** (cc_core 0.13.0): pin v0.6.1 ->
