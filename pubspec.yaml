@@ -1,7 +1,7 @@
 name: course_ledger
 description: "Course Ledger — the book of everywhere you've played. A private, on-device golf courses-played ledger. © Code Cowboys LLC."
 publish_to: 'none'
-version: 0.1.0+1
+version: 1.0.0+1
 
 environment:
   # Matches cc_core's floor — all CC apps build with the same local SDK

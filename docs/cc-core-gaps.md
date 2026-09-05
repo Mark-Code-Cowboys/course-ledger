@@ -34,6 +34,19 @@ number format). Empty barrels: `journal/`, `trends/`, `onboarding/`,
   files when rows referencing them go) is being re-needed here for round
   photos (Phase B composer). Third consumer of the pattern = extract into
   cc_core (`journal/` or a small `photos/` module).
+- **Single-entry share/exchange** (`io/`): friends and golf parties
+  sharing a scorecard scan — nothing exists yet (the scanned card image
+  isn't even persisted; only whole-book CSV/backup export ships).
+  Three privacy-first shapes, no cloud, all share-sheet/file based:
+  1. share the card photo + a text line out (group-chat bragging —
+     needs the scan to persist as a round photo first);
+  2. a tiny `.courseledger` round file another install opens into its
+     composer pre-filled (one scan feeds the whole foursome; needs
+     intent-filter/UTI registration);
+  3. "party scan": batch review picks which partners get a copy of (2).
+  (2) generalizes to every CC app as an `io/` single-entry exchange
+  format (one journal entry as a shareable file + confirm-on-open).
+  Post-1.0; positioning stays "the notebook", not a social app.
 - **Bucket list** (`journal/`?): courseId-XOR-freeText "want to do"
   list with done-linkage to a real entry. Feels generalizable (restaurants
   to try, trails to ride) — flag for review after Phase B proves the shape.
