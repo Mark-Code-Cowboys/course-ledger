@@ -1,4 +1,4 @@
-package com.codecowboys.course_ledger
+package com.codecowboys.courseledger
 
 import io.flutter.embedding.android.FlutterActivity
 

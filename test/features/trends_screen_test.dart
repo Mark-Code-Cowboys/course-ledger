@@ -60,7 +60,7 @@ void main() {
     expect(find.text('2 courses'), findsOneWidget);
     expect(find.text('3 rounds'), findsOneWidget);
     expect(find.text('2 states'), findsOneWidget);
-    expect(find.text('1 countries'), findsOneWidget);
+    expect(find.text('1 country'), findsOneWidget);
     expect(find.text('The played map'), findsOneWidget);
     expect(find.text('MI'), findsOneWidget); // a filled tile exists
     expect(find.text('New courses by year'), findsOneWidget);

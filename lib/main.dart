@@ -8,14 +8,19 @@ import 'core/export/share_plus_launcher.dart';
 import 'data/database/app_database.dart';
 import 'data/database/seed.dart';
 import 'data/providers.dart';
+import 'features/monetization/monetization_providers.dart';
 import 'features/scan_import/scan_import_providers.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   final db = AppDatabase.open();
 
-  // Screenshot data: `flutter run --dart-define=DEMO_SEED=true`
-  if (const bool.fromEnvironment('DEMO_SEED')) {
+  // Screenshot data: `flutter run --dart-define=DEMO_SEED=true`.
+  // Demo builds also fake Pro so the counter stays out of shots and the
+  // Pro-gated Trends screens are capturable; never ship this flag
+  // (release-checklist.md).
+  const demo = bool.fromEnvironment('DEMO_SEED');
+  if (demo) {
     await seedDemoData(db);
   }
 
@@ -29,6 +34,9 @@ Future<void> main() async {
             .overrideWithValue(MlKitTextRecognitionService()),
         shareLauncherProvider.overrideWithValue(SharePlusLauncher()),
         tempDirProvider.overrideWithValue(getTemporaryDirectory),
+        if (demo)
+          entitlementServiceProvider
+              .overrideWithValue(FakeEntitlementService(unlimited: true)),
       ],
       child: const CourseLedgerApp(),
     ),

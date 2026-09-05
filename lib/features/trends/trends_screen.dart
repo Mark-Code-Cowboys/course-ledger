@@ -132,10 +132,13 @@ class _TrendsContent extends ConsumerWidget {
             spacing: 8,
             runSpacing: 8,
             children: [
-              _StatChip(count: summaries.length, label: 'courses'),
-              _StatChip(count: rounds.length, label: 'rounds'),
-              _StatChip(count: playedStates.length, label: 'states'),
-              _StatChip(count: countries.length, label: 'countries'),
+              _StatChip(count: summaries.length, one: 'course'),
+              _StatChip(count: rounds.length, one: 'round'),
+              _StatChip(count: playedStates.length, one: 'state'),
+              _StatChip(
+                  count: countries.length,
+                  one: 'country',
+                  many: 'countries'),
             ],
           ),
         ),
@@ -216,16 +219,18 @@ class _TrendsContent extends ConsumerWidget {
 }
 
 class _StatChip extends StatelessWidget {
-  const _StatChip({required this.count, required this.label});
+  const _StatChip({required this.count, required this.one, String? many})
+      : many = many ?? '${one}s';
 
   final int count;
-  final String label;
+  final String one;
+  final String many;
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return Chip(
-      label: Text('$count $label'),
+      label: Text('$count ${count == 1 ? one : many}'),
       labelStyle: theme.textTheme.bodyMedium,
     );
   }
