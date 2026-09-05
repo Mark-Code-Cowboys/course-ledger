@@ -63,6 +63,34 @@ void main() {
       expect(draft.totalScore, 92);
     });
 
+    test('gross beats net: handicap rows never steal the score', () {
+      // The scorecard-app screenshot shape: net printed after the
+      // handicap, below the actual score.
+      final draft = parseScorecard([
+        line('Pine Hollow', top: 5, height: 40),
+        line('GROSS 92', top: 300),
+        line('HANDICAP 14', top: 340),
+        line('NET 78', top: 380),
+      ]);
+      expect(draft!.totalScore, 92);
+    });
+
+    test('a combined row reads the number after the best label', () {
+      final draft = parseScorecard([
+        line('Pine Hollow', top: 5, height: 40),
+        line('TOTAL 92 NET 78', top: 300),
+      ]);
+      expect(draft!.totalScore, 92);
+    });
+
+    test('net alone is still transcribed when nothing better exists', () {
+      final draft = parseScorecard([
+        line('Pine Hollow', top: 5, height: 40),
+        line('NET 78', top: 300),
+      ]);
+      expect(draft!.totalScore, 78);
+    });
+
     test('total outside playable range is ignored', () {
       final draft = parseScorecard([
         line('Birch Run', top: 5, height: 40),

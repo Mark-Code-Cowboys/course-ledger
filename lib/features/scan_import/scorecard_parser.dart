@@ -18,8 +18,9 @@ class ScorecardDraft {
 const _minTotal = 25;
 const _maxTotal = 170;
 
-final _totalWord =
-    RegExp(r'\b(total|gross|net|score)\b', caseSensitive: false);
+// In preference order: the gross/total is the ledger's one score; a
+// net (after handicap) is transcribed only when nothing better exists.
+const _totalWords = ['gross', 'total', 'score', 'net'];
 final _number = RegExp(r'\b(\d{1,3})\b');
 
 // Rows that are scorecard plumbing, never a course name.
@@ -75,18 +76,35 @@ ScorecardDraft? parseScorecard(List<OcrLine> lines) {
   }
 
   // --- total score ---
+  // Cards print several labeled numbers (OUT/IN/TOTAL, then NET after
+  // the handicap). Prefer the best label on the card, not the first
+  // row encountered: gross beats total beats score beats net.
   int? total;
+  var totalPriority = _totalWords.length;
   for (final row in rows) {
-    if (!_totalWord.hasMatch(row)) continue;
+    final lower = row.toLowerCase();
+    final priority = _totalWords.indexWhere(
+        (w) => RegExp('\\b$w\\b').hasMatch(lower));
+    if (priority == -1 || priority >= totalPriority) continue;
+    final keywordEnd =
+        RegExp('\\b${_totalWords[priority]}\\b').firstMatch(lower)!.end;
     final inRange = _number
         .allMatches(row)
-        .map((m) => int.parse(m.group(1)!))
-        .where((n) => n >= _minTotal && n <= _maxTotal)
+        .where((m) {
+          final n = int.parse(m.group(1)!);
+          return n >= _minTotal && n <= _maxTotal;
+        })
         .toList();
-    if (inRange.isNotEmpty) {
-      total = inRange.last; // rightmost printed number on the row
-      break;
-    }
+    if (inRange.isEmpty) continue;
+    // The number printed after the label ("TOTAL 92 NET 78" -> 92),
+    // else the rightmost on the row.
+    final afterKeyword =
+        inRange.where((m) => m.start >= keywordEnd).toList();
+    total = int.parse(
+        (afterKeyword.isNotEmpty ? afterKeyword.first : inRange.last)
+            .group(1)!);
+    totalPriority = priority;
+    if (priority == 0) break; // found a gross; nothing beats it
   }
 
   if (name == null && date == null && total == null) return null;
