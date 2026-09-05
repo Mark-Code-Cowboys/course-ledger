@@ -6,6 +6,7 @@ import '../../data/providers.dart';
 import '../../data/repositories/course_repository.dart';
 import '../courses/course_detail_screen.dart';
 import '../monetization/free_tier_counter.dart';
+import '../scan_import/import_sheet.dart';
 
 enum CourseSort { az, byState, byRecent }
 
@@ -69,7 +70,16 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   Widget build(BuildContext context) {
     final summaries = ref.watch(courseSummariesProvider);
     return Scaffold(
-      appBar: AppBar(title: const Text('Course Ledger')),
+      appBar: AppBar(
+        title: const Text('Course Ledger'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.move_to_inbox_outlined),
+            tooltip: 'Import rounds',
+            onPressed: () => showImportSheet(context, ref),
+          ),
+        ],
+      ),
       body: summaries.when(
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (e, _) => Center(child: Text('$e')),

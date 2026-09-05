@@ -12,12 +12,17 @@ dependencies:
   cc_core:
     git:
       url: https://github.com/Mark-Code-Cowboys/cc_core.git
-      ref: v0.7.0
+      ref: v0.8.0
   drift: ^2.34.3
   drift_flutter: ^0.3.1
+  # CSV pick for the import mapper (SAF/native dialogs, no permissions).
+  file_selector: ^1.0.3
   flutter:
     sdk: flutter
   flutter_riverpod: ^3.4.2
+  # Multi-select fallback for scorecard capture where the ML Kit
+  # document scanner isn't available (iOS).
+  image_picker: ^1.2.3
   stream_transform: ^2.1.1
 
 dev_dependencies:

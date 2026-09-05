@@ -1,9 +1,11 @@
+import 'package:cc_core/cc_core.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'app.dart';
 import 'data/database/app_database.dart';
 import 'data/providers.dart';
+import 'features/scan_import/scan_import_providers.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -11,7 +13,13 @@ void main() {
 
   runApp(
     ProviderScope(
-      overrides: [databaseProvider.overrideWithValue(db)],
+      overrides: [
+        databaseProvider.overrideWithValue(db),
+        documentScanServiceProvider
+            .overrideWithValue(MlKitDocumentScanService()),
+        textRecognitionServiceProvider
+            .overrideWithValue(MlKitTextRecognitionService()),
+      ],
       child: const CourseLedgerApp(),
     ),
   );

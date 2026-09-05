@@ -10,15 +10,18 @@ import 'package:course_ledger/data/providers.dart';
 import 'package:course_ledger/data/repositories/course_repository.dart';
 import 'package:course_ledger/data/repositories/round_repository.dart';
 import 'package:course_ledger/features/monetization/monetization_providers.dart';
+import 'package:course_ledger/features/scan_import/scan_import_providers.dart';
 import 'package:course_ledger/features/shell/home_shell.dart';
 
 AppDatabase makeTestDb() => AppDatabase(NativeDatabase.memory());
 
-/// The app wired to an in-memory database and a fake store; [home]
+/// The app wired to an in-memory database and fake services; [home]
 /// defaults to the shell and [entitlements] to a free-tier user.
 Widget testApp({
   required AppDatabase db,
   EntitlementService? entitlements,
+  DocumentScanService? scanner,
+  TextRecognitionService? recognizer,
   Widget? home,
 }) =>
     ProviderScope(
@@ -27,6 +30,10 @@ Widget testApp({
         kvStoreProvider.overrideWithValue(InMemoryKeyValueStore()),
         entitlementServiceProvider
             .overrideWithValue(entitlements ?? FakeEntitlementService()),
+        documentScanServiceProvider.overrideWithValue(
+            scanner ?? const UnsupportedDocumentScanService()),
+        textRecognitionServiceProvider
+            .overrideWithValue(recognizer ?? FakeTextRecognitionService()),
       ],
       child: MaterialApp(
         theme: AppTheme.light(),

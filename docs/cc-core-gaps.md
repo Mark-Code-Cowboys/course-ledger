@@ -14,8 +14,8 @@ number format). Empty barrels: `journal/`, `trends/`, `onboarding/`,
 | Phase | Needs | cc_core module | Status |
 | --- | --- | --- | --- |
 | A | Round notes/photos as journal entries (entry/rating/photo models, Drift repo) | `journal/` | empty — and Table Encore has no journal tables to extract either (its notes/photos are domain-table columns), so factory Phase 4 is a design job across both apps. Phase A shipped app-local `rounds.notes` + `round_photos`, shaped like the donor for a later lift. |
-| D | Scorecard photo scan → transcribe → confirm | `scan/` | empty (factory Phase 5) |
-| D | Shoebox batch import (shoot 20 cards → review list → bulk insert) | `notebook_import/` | empty (factory Phase 5) |
+| D | Scorecard photo scan → transcribe → confirm | `scan/` | DONE in cc_core 0.8.0 |
+| D | Shoebox batch import (shoot 20 cards → review list → bulk insert) | `notebook_import/` | DONE in cc_core 0.8.0 |
 | E | Courses/yr, rounds/yr, score trend line, counters | `trends/` | empty (factory Phase 4) |
 | E | Export/backup archive behind entitlement | `io/` | README promises CSV/JSON export + zip backup/restore, but only cloud backup is coded (factory Phase 3 partially shipped) |
 | F | First-run flow with positioning line, consent screen | `onboarding/` | empty (factory Phase 6) |
@@ -23,9 +23,6 @@ number format). Empty barrels: `journal/`, `trends/`, `onboarding/`,
 
 ## New generic candidates surfaced by this app
 
-- **CSV import mapper** (`io/`): Phase D.2 "spreadsheet keepers" importer —
-  pick file → map columns to fields → preview → bulk insert. Every CC app
-  has spreadsheet keepers; belongs beside export in `io/`.
 - **Coverage map widget** (`trends/`): Phase E "played map" — region fill
   (states/countries visited) + optional pins. Generic "where have I done X"
   map; reusable by any travel-ish ledger (Hitch Post, Loadbook).
@@ -46,6 +43,15 @@ number format). Empty barrels: `journal/`, `trends/`, `onboarding/`,
   to try, trails to ride) — flag for review after Phase B proves the shape.
 
 ## Done
+
+- **scan/ + notebook_import/ modules** (cc_core 0.8.0, Phase D):
+  extracted from Table Encore's OCR core — OcrLine/mergeOcrRows,
+  DocumentScanService (+ multi-page scanAll) and TextRecognitionService
+  with ML Kit impls and fakes; batchTranscribe + BatchReviewScreen.
+  Table Encore's `core/ocr/` is now a duplicate to migrate off.
+- **CSV import parsing** (`io/` in cc_core 0.8.0, Phase D):
+  parseCsv/CsvDocument. The column-mapping *screen* stayed app-side —
+  extract once a second app builds one.
 
 - **`LifetimeTally`** (cc_core 0.7.0, Phase C): extracted from Table
   Encore's `RestaurantTally` when Course Ledger became the second

@@ -99,6 +99,9 @@ class CourseRepository {
         .toList());
   }
 
+  /// One-shot listing for importers and pickers.
+  Future<List<Course>> getCourses() => _db.select(_db.courses).get();
+
   Stream<Course?> watchCourse(int id) {
     final query = _db.select(_db.courses)..where((c) => c.id.equals(id));
     return query.watchSingleOrNull();
