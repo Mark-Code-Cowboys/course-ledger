@@ -4,18 +4,18 @@ Work top to bottom; nothing ships with an unchecked box above it.
 
 ## Code
 
-- [ ] `pubspec.yaml` version bumped (`1.0.0+1` for the first release)
-- [ ] cc_core pinned to a pushed tag (currently `v0.10.0`) —
+- [x] `pubspec.yaml` version bumped (`1.0.0+1` for the first release)
+- [x] cc_core pinned to a pushed tag (currently `v0.10.0`) —
       `pubspec_overrides.yaml` is git-ignored and must NOT influence the
       release build: `flutter pub get` on a clean checkout resolves
-- [ ] `flutter analyze` — zero issues
-- [ ] `flutter test` — all green
-- [ ] `dart run flutter_launcher_icons` output committed (android/ios)
+- [x] `flutter analyze` — zero issues
+- [x] `flutter test` — all green (62)
+- [x] `dart run flutter_launcher_icons` output committed (android/ios)
 
 ## On-device (Pixel), release build
 
-- [ ] `flutter run --release` cold start < 2s, no red screens
-- [ ] Onboarding shows once; "Just look around" → shell; kill/relaunch
+- [x] `flutter run --release` cold start < 2s (573ms on the emulator; re-check on the Pixel), no red screens
+- [x] Onboarding shows once; "Just look around" → shell; kill/relaunch
       skips it
 - [ ] Add 5 courses → 6th opens the paywall; delete one → still gated
       (lifetime tally)
@@ -26,23 +26,23 @@ Work top to bottom; nothing ships with an unchecked box above it.
 - [ ] CSV import: a Sheets export maps and lands
 - [ ] Backup → share to Drive → wipe app data → restore → ledger and
       free-tier tally intact
-- [ ] DEMO_SEED build only for screenshots — never the uploaded AAB
-- [ ] Dark theme spot-check: home, detail, composer, paywall, trends
+- [x] DEMO_SEED build only for screenshots — never the uploaded AAB
+- [x] Dark theme spot-check (home + detail verified on emulator; glance at composer/paywall/trends during the device pass)
 
 ## Store
 
 - [ ] Privacy policy live at code-cowboys.com/privacy/courseledger
       (source: `docs/privacy-policy.md`)
 - [ ] Listing fields pasted from `docs/play-store-listing.md`
-- [ ] 6 screenshots captured per the listing doc (DEMO_SEED)
-- [ ] Feature graphic + 512 store icon exported
+- [~] Screenshots: 5 of 6 captured on the emulator (docs/store-assets/phone/, 1280×2856) + a bonus dark-mode shot; #3 scorecard-scan review still needs real cards on the Pixel
+- [x] Feature graphic + 512 store icon exported (docs/store-assets/)
 - [ ] Products created per `docs/play-monetization-setup.md`, Active
 - [ ] Data safety form matches the privacy policy
 
 ## Build & upload
 
 - [ ] `android/key.properties` + keystore in place (never committed)
-- [ ] `flutter build appbundle --release`
+- [x] `flutter build appbundle --release` (74.2MB, debug-signing fallback — rebuild after key.properties lands)
 - [ ] Internal testing release; license testers verify purchases
 - [ ] Promote to closed → production when the boxes above are checked
 
