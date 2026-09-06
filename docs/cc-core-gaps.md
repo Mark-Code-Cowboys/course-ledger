@@ -162,9 +162,20 @@ all tests green, release APK built:
 - **Back Forty** (e2a8c90): shareStampedFile ×2, runRestoreFlow (no
   tally raise — live-count free tier). Gradle already tolled at 0-G.
 
-**cc_template**: still pending its next touch — default ref bump to
-v0.21.2 and the gradle toll snippets (timezone Kotlin scope, desugaring,
-ML Kit proguard).
+**cc_template** → DONE (2026-09-05, e5f1540): default ref v0.21.2;
+--fix-platform now applies the full gradle toll (timezone Kotlin
+scope, desugaring, ML Kit proguard) right after the id repairs —
+verified byte-identical against Course Ledger's hand-applied result.
+Future stamps pay no toll by hand.
+
+**Stragglers closed same day**: pocket-curio's map _ProTeaser (the one
+copy the adoption pass left) onto cc_core ProTeaser (924ca04, 95/95).
+Trace Elements repinned v0.13.0 → v0.21.2 (af42488, 187/187, release
+APK builds): local titleCaseShouted onto cc_core's behind its static
+shim, gradle toll + the ML Kit -keep rules its proguard predated. The
+pin forced package_info_plus ^10 and file_picker ^12 (win32 conflict
+via cc_core's share_plus); file_picker 12's static API is absorbed
+inside the file_transfer wrappers, call sites untouched.
 
 **Watch list — the two ripe items CLOSED in cc_core 0.20.0**
 (shareStampedFile + dateStamp; runRestoreFlow with XFile-based reading
