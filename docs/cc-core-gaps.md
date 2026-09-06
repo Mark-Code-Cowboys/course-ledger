@@ -184,9 +184,22 @@ and the flow's first-ever widget tests). CL/HP/FP/BF copies shed
 - Still watching: _StatChip/chips-wrap over CountedSubject;
   PhotoCropper (1 consumer).
 
-**Open work items** (not gaps): Loadbook (prompt-4, store-policy
-rails); Fresh Pot incumbent sample file (D-addendum seam ready);
-per-app human release checklists.
+**Open work items** (not gaps): Fresh Pot incumbent sample file
+(D-addendum seam ready); per-app human release checklists.
+
+**Loadbook 0-G COMPLETE (2026-09-05/06)** — the seventh and final
+board app, and the cleanest bring-up yet: first stamp through the
+tolled cc_template (--fix-platform applied the whole gradle toll
+itself), consumed eleven cc_core modules with ZERO new gaps, ZERO
+local copies to shed later, and zero core defects surfaced. Notable
+consumer firsts: runRestoreFlow + shareStampedFile + journal
+dump/restore adopted from birth rather than shed onto; ProTeaser with
+an ungated restore on day one. New app-side ideas worth watching for
+a second consumer someday: the two-handle photo measurer
+(target_measure_screen) and the label-driven card parser shape. The
+strict store-policy rails were encoded as tests (verbatim-charge
+storage, fictional-seed value pinning) — a pattern worth stealing for
+any future rails-heavy app.
 
 ## Done
 
