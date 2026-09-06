@@ -88,11 +88,9 @@ local copies on next touch; the watch list below stays open.
   watching: `_StatChip` + a chips-wrap over CountedSubject; the
   ExportService stamp/write/share shape.
 
-Fleet adoption debts (next touch of each repo):
+Fleet adoption debts → ALL CLEARED in the 2026-09-05 shed passes
+(see below).
 
-- Course Ledger: RatingStars, FreeTierCounter, parseLooseDate,
-  CsvMappingScreen (local copies still in place).
-- Table Encore: RatingStars, FreeTierCounter.
 - cc_template skeleton: → DONE 2026-09-05 (Fresh Pot's stamp was the
   template touch): journal registrations + AppDatabase.journal(),
   AppRoot/firstRunSeen gate, FreeTierCounter placeholder home, the
@@ -134,34 +132,44 @@ notifications-module fixes + ML Kit proguard (cc_core ≥0.18 pulls
 those plugins transitively — EVERY old app repinning core will need
 the same three; template skeleton candidates).
 
-**Course Ledger**: RatingStars, FreeTierCounter, parseLooseDate,
-CsvMappingScreen, SharePlusLauncher, journal dump/restore blocks,
-ProTeaser shape, capture preamble (shoebox). Six-plus shims, pure
-deletion.
+**Shed passes DONE (2026-09-05)** — every app on cc_core v0.21.2,
+every duplicated local copy deleted; each pass ended analyzer-clean,
+all tests green, release APK built:
 
-**Hitch Post**: parseCostCents/parsePageDates (donated to 0.19, local
-copies remain), parseLooseDate (dates.dart), _titleCaseShouted,
-SharePlusLauncher, ProTeaser, captureDocumentPages preamble ×3,
-journal dump/restore blocks.
+- **Hitch Post** (ef08f99): SharePlusLauncher, receipt parser onto
+  parseCostCents/parsePageDates, titleCaseShouted, captureDocumentPages
+  ×2, ProTeaser, runRestoreFlow (tally raiseTo kept in the callback),
+  shareStampedFile ×2, journal dump/restore blocks. Gradle toll.
+- **Course Ledger** (425944b): RatingStars, FreeTierCounter,
+  SharePlusLauncher, parseLooseDate, titleCaseShouted, the whole local
+  CsvImportScreen onto showCsvMappingScreen + CsvField (clCsvFields),
+  ProTeaser, runRestoreFlow, shareStampedFile ×2, captureDocumentPages,
+  journal dump/restore blocks (format-1 upgrade output already
+  canonical — the helper's null-createdAt guard covers it). Gradle
+  toll. Net -282 lines.
+- **Table Encore** (26ad40a): pin jump v0.11.0 → v0.21.2 with ZERO API
+  breakage. RatingStars (rating:/size API swap at 3 call sites;
+  RatingSelector stays — input widget), FreeTierCounter (3 call sites
+  onto usage/onGoPro, label 'Unlock'), titleCaseShouted (re-exported
+  from receipt_parser for the menu parser), SharePlusLauncher, journal
+  dump/restore blocks, exporter tail onto shareStampedFile (identical
+  date-only stamp). SEED_DEV_DATA → DEMO_SEED everywhere + demo builds
+  now fake Unlimited like the fleet. Cloud restore KEPT on its own
+  iCloud/Drive backends — runRestoreFlow's pick-a-file shape doesn't
+  apply. Gradle toll.
+- **Fresh Pot** (960fbca): parsePageDatesFirst → parsePageDates(max: 1),
+  shareStampedFile ×2, runRestoreFlow. Gradle toll.
+- **Back Forty** (e2a8c90): shareStampedFile ×2, runRestoreFlow (no
+  tally raise — live-count free tier). Gradle already tolled at 0-G.
 
-**Table Encore**: RatingStars, FreeTierCounter, titleCaseShouted
-(receipt_parser), journal dump/restore blocks, SEED_DEV_DATA →
-DEMO_SEED rename (five apps now share the blessed name — the old
-naming candidate is settled by majority).
-
-**Fresh Pot**: near-clean (born on 0.17); only bag_label_parser's
-parsePageDatesFirst → cc_core parsePageDates(max: 1) from 0.19.
-
-**Back Forty**: clean (born on 0.19). Its Phase G donated the
-notifications-module gradle requirements (above).
-
-**cc_template**: default ref bump v0.17.0 → v0.19.0; gradle skeleton
-additions for the notifications module (the two Phase G findings).
+**cc_template**: still pending its next touch — default ref bump to
+v0.21.2 and the gradle toll snippets (timezone Kotlin scope, desugaring,
+ML Kit proguard).
 
 **Watch list — the two ripe items CLOSED in cc_core 0.20.0**
 (shareStampedFile + dateStamp; runRestoreFlow with XFile-based reading
-and the flow's first-ever widget tests). CL/HP/FP/BF shed their copies
-on next touch.
+and the flow's first-ever widget tests). CL/HP/FP/BF copies shed
+2026-09-05 (passes above).
 - Still watching: _StatChip/chips-wrap over CountedSubject;
   PhotoCropper (1 consumer).
 
