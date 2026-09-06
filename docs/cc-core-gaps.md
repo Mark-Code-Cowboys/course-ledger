@@ -116,21 +116,23 @@ defects — first fleet app where bring-up + device pass found none.
 Baseline: cc_core v0.19.0, ten modules, all consumer-proven. Per-app
 debts, biggest first:
 
-**pocket-curio** (pinned v0.10.0 — nine tags behind; built before the
-extraction era). The fleet's one big adoption pass:
-- JOURNAL NOT ADOPTED: items carry photoPath/rating/notes as columns
-  (pre-option-B). Adoption = CL-style schema v2 migration into the
-  shared journal tables + backup format bump — after which the 0.17
-  dump/restore helpers apply. The last journal holdout in the fleet.
-- Local copies to shed on that same pass: rating_stars (38 lines),
-  free_tier_counter (99), share_plus_launcher (31), photo_store (52,
-  vs cc_core PhotoService), plus the pre-ProTeaser paywall framing.
-- NEW CORE CANDIDATES it donates: continent tiles + CA province tiles
-  for RegionTileGrid (it hand-rolled both; second consumer of region
-  tiles beyond usStateTiles) and the PhotoCropper seam +
-  guided-crop UI (unique today — watch for a second cropper).
-- Uses DEMO_SEED, cc_core onboarding, RegionTileGrid already — good
-  bones; this is a pin-bump + shed pass, not a rebuild.
+**pocket-curio** → ADOPTION PASS DONE (2026-09-05, commit in repo):
+pin v0.10.0 → v0.21.2. Journal adopted with the Table Encore
+precedent: rating/notes into the shared tables (schema v2, migration
+proven against a raw v1 file AND live on the emulator's real
+pre-migration install — upgraded in place, memories intact); the item
+photo stays a domain column (the photo IS the record; see
+pocket-curio/docs/journal-adoption-read.md). Backups format 2 with a
+format-1 shim. Shed: RatingStars, SharePlusLauncher, restore flow
+(runRestoreFlow + PhotoStoreService adapter), export tail. Donated:
+continentTiles/continentNames (cc_core 0.21.0/0.21.1) and the
+sync-write insight now in shareStampedFile (0.21.2). KEPT local, on
+purpose: the dual-limit FreeTierCounter (different widget, not a
+duplicate) and PhotoStore (structural; still on the watch list for a
+second photo-first consumer). Release gradle also gained the
+notifications-module fixes + ML Kit proguard (cc_core ≥0.18 pulls
+those plugins transitively — EVERY old app repinning core will need
+the same three; template skeleton candidates).
 
 **Course Ledger**: RatingStars, FreeTierCounter, parseLooseDate,
 CsvMappingScreen, SharePlusLauncher, journal dump/restore blocks,
