@@ -19,11 +19,6 @@ class ExportService {
   final Future<Directory> Function() _tempDir;
   final PhotoService? _photos;
 
-  static String _stamp(DateTime d) =>
-      '${d.year.toString().padLeft(4, '0')}-'
-      '${d.month.toString().padLeft(2, '0')}-'
-      '${d.day.toString().padLeft(2, '0')}';
-
   /// Every round as a CSV row, joined with its course. Returns the
   /// written file (mainly for tests).
   Future<File> shareRoundsCsv({DateTime? now}) async {
@@ -60,12 +55,16 @@ class ExportService {
         ],
     ]);
 
-    final stamp = _stamp(now ?? DateTime.now());
-    final file = File('${(await _tempDir()).path}/courseledger-rounds-$stamp.csv');
-    await file.writeAsString(csv);
-    await _share.shareFile(file.path,
-        mimeType: 'text/csv', text: 'Course Ledger rounds ($stamp)');
-    return file;
+    return shareStampedFile(
+      share: _share,
+      tempDir: _tempDir,
+      baseName: 'courseledger-rounds',
+      extension: 'csv',
+      mimeType: 'text/csv',
+      shareText: 'Course Ledger rounds',
+      text: csv,
+      now: now,
+    );
   }
 
   /// The full ledger as one zip: export JSON plus round photo files.
@@ -78,13 +77,15 @@ class ExportService {
           ? const {}
           : await _db.journal().collectMedia(store),
     );
-    final stamp = _stamp(now ?? DateTime.now());
-    final file =
-        File('${(await _tempDir()).path}/courseledger-backup-$stamp.zip');
-    await file.writeAsBytes(bytes);
-    await _share.shareFile(file.path,
-        mimeType: 'application/zip',
-        text: 'Course Ledger backup ($stamp)');
-    return file;
+    return shareStampedFile(
+      share: _share,
+      tempDir: _tempDir,
+      baseName: 'courseledger-backup',
+      extension: 'zip',
+      mimeType: 'application/zip',
+      shareText: 'Course Ledger backup',
+      bytes: bytes,
+      now: now,
+    );
   }
 }

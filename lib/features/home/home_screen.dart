@@ -6,7 +6,8 @@ import '../../core/utils/dates.dart';
 import '../../data/providers.dart';
 import '../../data/repositories/course_repository.dart';
 import '../courses/course_detail_screen.dart';
-import '../monetization/free_tier_counter.dart';
+import '../monetization/monetization_providers.dart';
+import '../monetization/paywall_sheet.dart';
 import '../scan_import/import_sheet.dart';
 
 enum CourseSort { az, byState, byRecent }
@@ -127,7 +128,13 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               style: theme.textTheme.headlineSmall),
         ),
         // Invisible for Pro owners; taps open the paywall.
-        const FreeTierCounter(margin: EdgeInsets.fromLTRB(16, 0, 16, 8)),
+        // Invisible for Pro owners; taps open the paywall.
+        if (ref.watch(freeTierUsageProvider) case final usage?)
+          FreeTierCounter(
+            usage: usage,
+            margin: const EdgeInsets.fromLTRB(16, 0, 16, 8),
+            onGoPro: () => showPaywallSheet(context),
+          ),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
           child: SegmentedButton<CourseSort>(

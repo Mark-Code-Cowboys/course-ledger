@@ -1,7 +1,5 @@
-import 'dart:io';
 
 import 'package:cc_core/cc_core.dart';
-import 'package:file_selector/file_selector.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -19,54 +17,19 @@ class TrendsScreen extends ConsumerWidget {
     final pro = ref.watch(isProProvider).value ?? false;
     return Scaffold(
       appBar: AppBar(title: const Text('Trends')),
-      body: pro ? const _TrendsContent() : const _ProTeaser(),
-    );
-  }
-}
-
-/// Free users see the pitch — and the restore button, because getting
-/// your own ledger back is never gated.
-class _ProTeaser extends ConsumerWidget {
-  const _ProTeaser();
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final theme = Theme.of(context);
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(32),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(Icons.map_outlined,
-                size: 64, color: theme.colorScheme.primary),
-            const SizedBox(height: 16),
-            Text('The long arc of your golf.',
-                style: theme.textTheme.titleMedium,
-                textAlign: TextAlign.center),
-            const SizedBox(height: 8),
-            Text(
-              'The played map, courses and rounds by year, your score '
-              'trend, and export — all part of Course Ledger Pro.',
-              style: theme.textTheme.bodyMedium?.copyWith(
-                  color: theme.colorScheme.onSurfaceVariant),
-              textAlign: TextAlign.center,
+      body: pro
+          ? const _TrendsContent()
+          : ProTeaser(
+              icon: Icons.map_outlined,
+              headline: 'The long arc of your golf.',
+              body: 'The played map, courses and rounds by year, your '
+                  'score trend, and export — all part of Course Ledger '
+                  'Pro.',
+              ctaLabel: 'See Course Ledger Pro',
+              onSeePro: () => showPaywallSheet(context),
+              ungatedLabel: 'Restore a backup',
+              onUngated: () => restoreBackupFlow(context, ref),
             ),
-            const SizedBox(height: 16),
-            FilledButton(
-              onPressed: () => showPaywallSheet(context),
-              child: const Text('See Course Ledger Pro'),
-            ),
-            const SizedBox(height: 24),
-            const Divider(),
-            TextButton.icon(
-              icon: const Icon(Icons.settings_backup_restore),
-              label: const Text('Restore a backup'),
-              onPressed: () => restoreBackupFlow(context, ref),
-            ),
-          ],
-        ),
-      ),
     );
   }
 }
@@ -237,48 +200,19 @@ class _StatChip extends StatelessWidget {
   }
 }
 
-/// Pick a .zip backup, confirm the replace, restore, raise the tally.
-/// Available to free users — restoring your own ledger is never gated.
+/// The shared cc_core restore flow with Course Ledger's words and
+/// tally raise. Available to free users — restoring your own ledger is
+/// never gated.
 Future<void> restoreBackupFlow(BuildContext context, WidgetRef ref) async {
-  const typeGroup = XTypeGroup(label: 'Backup', extensions: ['zip']);
-  final picked = await openFile(acceptedTypeGroups: const [typeGroup]);
-  if (picked == null || !context.mounted) return;
-  final messenger = ScaffoldMessenger.of(context);
-
-  final confirmed = await showDialog<bool>(
-    context: context,
-    builder: (ctx) => AlertDialog(
-      title: const Text('Restore this backup?'),
-      content: const Text(
-          'The ledger on this phone is replaced with the backup — '
-          'courses, rounds, and bucket list. This cannot be undone.'),
-      actions: [
-        TextButton(
-            onPressed: () => Navigator.of(ctx).pop(false),
-            child: const Text('Cancel')),
-        FilledButton(
-            onPressed: () => Navigator.of(ctx).pop(true),
-            child: const Text('Restore')),
-      ],
-    ),
+  await runRestoreFlow(
+    context,
+    confirmBody: 'The ledger on this phone is replaced with the backup — '
+        'courses, rounds, and bucket list. This cannot be undone.',
+    photoStore: ref.read(photoServiceProvider),
+    restore: (contents) async {
+      final lifetime = await restoreFromExportData(
+          ref.read(databaseProvider), contents.exportData);
+      await ref.read(courseTallyProvider).raiseTo(lifetime);
+    },
   );
-  if (confirmed != true) return;
-
-  try {
-    final contents = readBackupArchive(await File(picked.path).readAsBytes());
-    final lifetime = await restoreFromExportData(
-        ref.read(databaseProvider), contents.exportData);
-    // Photo files ride along in the archive; put them back in the store.
-    final store = ref.read(photoServiceProvider);
-    for (final entry in contents.media.entries) {
-      await store.importBytes(entry.key, entry.value);
-    }
-    await ref.read(courseTallyProvider).raiseTo(lifetime);
-    messenger.showSnackBar(
-        const SnackBar(content: Text('Backup restored.')));
-  } on InvalidBackupException catch (e) {
-    messenger.showSnackBar(SnackBar(content: Text(e.message)));
-  } on Exception catch (e) {
-    messenger.showSnackBar(SnackBar(content: Text('Restore failed: $e')));
-  }
 }

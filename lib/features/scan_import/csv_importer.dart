@@ -1,6 +1,5 @@
 import 'package:cc_core/cc_core.dart';
 
-import '../../core/utils/dates.dart';
 import '../../data/database/app_database.dart';
 import '../../data/repositories/bucket_list_repository.dart';
 import '../../data/repositories/course_repository.dart';

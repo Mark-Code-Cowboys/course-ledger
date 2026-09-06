@@ -1,6 +1,5 @@
 import 'package:cc_core/cc_core.dart';
 
-import '../../core/utils/dates.dart';
 
 /// What one scorecard photo transcribed to. Every field is exactly what
 /// the camera saw (cased for readability) — the user confirms and edits
@@ -29,17 +28,6 @@ final _nameNoise = RegExp(
     r'total|gross|net|date|player|scorer|attest|marker|rating|slope)\b',
     caseSensitive: false);
 
-/// Scorecards shout the club name in ALL CAPS; make it readable.
-/// Mixed-case names pass through untouched.
-String _titleCaseShouted(String s) {
-  if (s != s.toUpperCase()) return s;
-  return s
-      .toLowerCase()
-      .split(' ')
-      .map((w) => w.isEmpty ? w : w[0].toUpperCase() + w.substring(1))
-      .join(' ');
-}
-
 /// Transcribes one scorecard photo's OCR into a [ScorecardDraft].
 ///
 /// Course name: the tallest text in the top third of the card that
@@ -63,7 +51,7 @@ ScorecardDraft? parseScorecard(List<OcrLine> lines) {
     final text = line.text.trim();
     if (text.length < 4 || _nameNoise.hasMatch(text)) continue;
     if (!RegExp(r'[a-zA-Z]{3}').hasMatch(text)) continue;
-    name = _titleCaseShouted(text);
+    name = titleCaseShouted(text);
     break;
   }
 

@@ -17,15 +17,6 @@ Future<Map<String, Object?>> buildExportData(
   final rounds = await (db.select(db.rounds)
         ..orderBy([(t) => OrderingTerm.asc(t.id)]))
       .get();
-  final entries = await (db.select(db.appJournalEntries)
-        ..orderBy([(t) => OrderingTerm.asc(t.id)]))
-      .get();
-  final photos = await (db.select(db.appJournalPhotos)
-        ..orderBy([(t) => OrderingTerm.asc(t.id)]))
-      .get();
-  final tags = await (db.select(db.appJournalTags)
-        ..orderBy([(t) => OrderingTerm.asc(t.id)]))
-      .get();
   final bucket = await (db.select(db.bucketList)
         ..orderBy([(t) => OrderingTerm.asc(t.id)]))
       .get();
@@ -69,28 +60,7 @@ Future<Map<String, Object?>> buildExportData(
           'journalEntryId': r.journalEntryId,
         },
     ],
-    'journalEntries': [
-      for (final e in entries)
-        {
-          'id': e.id,
-          'notes': e.notes,
-          'rating': e.rating,
-          'createdAt': e.createdAt.toIso8601String(),
-        },
-    ],
-    'journalPhotos': [
-      for (final p in photos)
-        {
-          'id': p.id,
-          'entryId': p.entryId,
-          'path': p.path,
-          'caption': p.caption,
-        },
-    ],
-    'journalTags': [
-      for (final t in tags)
-        {'id': t.id, 'entryId': t.entryId, 'tag': t.tag},
-    ],
+    ...await db.journal().dumpJournalTables(),
     'bucketList': [
       for (final b in bucket)
         {
@@ -122,16 +92,8 @@ Future<int> restoreFromExportData(
 
   final courses = upgraded['courses'];
   final rounds = upgraded['rounds'];
-  final entries = upgraded['journalEntries'];
-  final photos = upgraded['journalPhotos'];
-  final tags = upgraded['journalTags'];
   final bucket = upgraded['bucketList'];
-  if (courses is! List ||
-      rounds is! List ||
-      entries is! List ||
-      photos is! List ||
-      tags is! List ||
-      bucket is! List) {
+  if (courses is! List || rounds is! List || bucket is! List) {
     throw const InvalidBackupException('Malformed export tables');
   }
 
@@ -140,31 +102,8 @@ Future<int> restoreFromExportData(
     await db.delete(db.courses).go();
     await db.delete(db.appJournalEntries).go();
 
-    for (final row in entries.cast<Map<String, dynamic>>()) {
-      await db.into(db.appJournalEntries).insert(RawValuesInsertable({
-            'id': Variable(row['id'] as int),
-            'notes': Variable(row['notes'] as String?),
-            'rating': Variable(row['rating'] as int?),
-            if (row['createdAt'] != null)
-              'created_at':
-                  Variable(DateTime.parse(row['createdAt'] as String)),
-          }));
-    }
-    for (final row in photos.cast<Map<String, dynamic>>()) {
-      await db.into(db.appJournalPhotos).insert(RawValuesInsertable({
-            'id': Variable(row['id'] as int),
-            'entry_id': Variable(row['entryId'] as int),
-            'path': Variable(row['path'] as String),
-            'caption': Variable(row['caption'] as String?),
-          }));
-    }
-    for (final row in tags.cast<Map<String, dynamic>>()) {
-      await db.into(db.appJournalTags).insert(RawValuesInsertable({
-            'id': Variable(row['id'] as int),
-            'entry_id': Variable(row['entryId'] as int),
-            'tag': Variable(row['tag'] as String),
-          }));
-    }
+    await db.journal().restoreJournalTables(upgraded);
+
     for (final row in courses.cast<Map<String, dynamic>>()) {
       await db.into(db.courses).insert(CoursesCompanion(
             id: Value(row['id'] as int),

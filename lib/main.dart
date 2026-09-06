@@ -6,7 +6,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:path_provider/path_provider.dart';
 
 import 'app.dart';
-import 'core/export/share_plus_launcher.dart';
 import 'data/database/app_database.dart';
 import 'data/database/seed.dart';
 import 'data/providers.dart';

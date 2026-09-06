@@ -98,7 +98,28 @@ void main() {
           builder: (context) => TextButton(
             onPressed: () => Navigator.of(context).push(
               MaterialPageRoute<void>(
-                  builder: (_) => CsvImportScreen(doc: doc)),
+                builder: (_) => CsvMappingScreen(
+                  doc: doc,
+                  fields: clCsvFields,
+                  title: 'Import spreadsheet',
+                  onImport: (mapping) async {
+                    final report = await importCsvRounds(
+                      courses: courses,
+                      rounds: RoundRepository(db,
+                          journal: db.journal()),
+                      bucketList: BucketListRepository(db),
+                      doc: doc,
+                      mapping: CsvFieldMapping(
+                        courseName: mapping['courseName'],
+                        date: mapping['date'],
+                        score: mapping['score'],
+                      ),
+                      entitled: true,
+                    );
+                    return report.summary;
+                  },
+                ),
+              ),
             ),
             child: const Text('open mapper'),
           ),
@@ -109,7 +130,7 @@ void main() {
     await tester.tap(find.text('open mapper'));
     await tester.pumpAndSettle();
 
-    expect(find.text('2 rows found. Match your columns to the ledger:'),
+    expect(find.text('2 rows found. Match your columns:'),
         findsOneWidget);
 
     await tester.scrollUntilVisible(find.text('Import'), 100);

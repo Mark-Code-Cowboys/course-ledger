@@ -1,7 +1,6 @@
 import 'package:cc_core/cc_core.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:course_ledger/core/utils/dates.dart';
 import 'package:course_ledger/features/scan_import/scorecard_parser.dart';
 
 void main() {

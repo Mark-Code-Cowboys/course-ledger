@@ -1,7 +1,6 @@
 import 'package:cc_core/cc_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:image_picker/image_picker.dart';
 
 import '../../core/utils/dates.dart';
 import '../../data/providers.dart';
@@ -28,20 +27,9 @@ Future<void> runShoeboxImport(BuildContext context, WidgetRef ref) async {
 
   final messenger = ScaffoldMessenger.of(context);
 
-  // Capture: document scanner (auto-crop/deskew) where available,
-  // otherwise the multi-select photo picker.
-  final scanner = ref.read(documentScanServiceProvider);
-  List<String> paths;
-  if (scanner.isSupported) {
-    try {
-      paths = await scanner.scanAll(pageLimit: 20);
-    } on Exception {
-      paths = const [];
-    }
-  } else {
-    final picked = await ImagePicker().pickMultiImage(limit: 20);
-    paths = [for (final image in picked) image.path];
-  }
+  final paths = await captureDocumentPages(
+      ref.read(documentScanServiceProvider),
+      pageLimit: 20);
   if (paths.isEmpty || !context.mounted) return;
 
   final transcription = await batchTranscribe<ScorecardDraft>(
