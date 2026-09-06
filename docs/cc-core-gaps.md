@@ -111,6 +111,65 @@ notifications README note.
 Hitch Post's demo-seed device pass (2026-09-05) surfaced zero cc_core
 defects — first fleet app where bring-up + device pass found none.
 
+## Fleet gap analysis (2026-09-05, post Back Forty 0-G, pocket-curio included)
+
+Baseline: cc_core v0.19.0, ten modules, all consumer-proven. Per-app
+debts, biggest first:
+
+**pocket-curio** (pinned v0.10.0 — nine tags behind; built before the
+extraction era). The fleet's one big adoption pass:
+- JOURNAL NOT ADOPTED: items carry photoPath/rating/notes as columns
+  (pre-option-B). Adoption = CL-style schema v2 migration into the
+  shared journal tables + backup format bump — after which the 0.17
+  dump/restore helpers apply. The last journal holdout in the fleet.
+- Local copies to shed on that same pass: rating_stars (38 lines),
+  free_tier_counter (99), share_plus_launcher (31), photo_store (52,
+  vs cc_core PhotoService), plus the pre-ProTeaser paywall framing.
+- NEW CORE CANDIDATES it donates: continent tiles + CA province tiles
+  for RegionTileGrid (it hand-rolled both; second consumer of region
+  tiles beyond usStateTiles) and the PhotoCropper seam +
+  guided-crop UI (unique today — watch for a second cropper).
+- Uses DEMO_SEED, cc_core onboarding, RegionTileGrid already — good
+  bones; this is a pin-bump + shed pass, not a rebuild.
+
+**Course Ledger**: RatingStars, FreeTierCounter, parseLooseDate,
+CsvMappingScreen, SharePlusLauncher, journal dump/restore blocks,
+ProTeaser shape, capture preamble (shoebox). Six-plus shims, pure
+deletion.
+
+**Hitch Post**: parseCostCents/parsePageDates (donated to 0.19, local
+copies remain), parseLooseDate (dates.dart), _titleCaseShouted,
+SharePlusLauncher, ProTeaser, captureDocumentPages preamble ×3,
+journal dump/restore blocks.
+
+**Table Encore**: RatingStars, FreeTierCounter, titleCaseShouted
+(receipt_parser), journal dump/restore blocks, SEED_DEV_DATA →
+DEMO_SEED rename (five apps now share the blessed name — the old
+naming candidate is settled by majority).
+
+**Fresh Pot**: near-clean (born on 0.17); only bag_label_parser's
+parsePageDatesFirst → cc_core parsePageDates(max: 1) from 0.19.
+
+**Back Forty**: clean (born on 0.19). Its Phase G donated the
+notifications-module gradle requirements (above).
+
+**cc_template**: default ref bump v0.17.0 → v0.19.0; gradle skeleton
+additions for the notifications module (the two Phase G findings).
+
+**Watch list, now RIPE (4 identical consumers — past the rule):**
+- ExportService shape: CL/HP/FP/BF carry the same stamp/temp-write/
+  share scaffolding — extract a shareStampedFile helper (io/); the
+  per-app CSV queries stay domain.
+- restoreBackupFlow UI: the pick-confirm-restore-media-snackbar flow
+  is near-verbatim ×4 — riverpod-free candidate taking the app's
+  restore callback.
+- Still watching: _StatChip/chips-wrap over CountedSubject;
+  PhotoCropper (1 consumer).
+
+**Open work items** (not gaps): Loadbook (prompt-4, store-policy
+rails); Fresh Pot incumbent sample file (D-addendum seam ready);
+per-app human release checklists.
+
 ## Done
 
 - **Trace Elements adoption pass** (cc_core 0.13.0): pin v0.6.1 ->
