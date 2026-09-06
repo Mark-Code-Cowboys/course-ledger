@@ -99,6 +99,15 @@ Fleet adoption debts (next touch of each repo):
   makeTestDb/testApp/disposeApp harness; default ref v0.17.0. The repo
   still needs its GitHub remote.
 
+**notifications-module consumer setup** (found in Back Forty Phase G's
+release build; applies to every future consumer): (1) flutter_timezone
+ships Java 11 / Kotlin 1.8 — scope a Kotlin JVM_11 override to that
+subproject in android/build.gradle.kts; (2) flutter_local_notifications
+requires core-library desugaring (isCoreLibraryDesugaringEnabled +
+desugar_jdk_libs 2.1.4) in the app module. Candidates for the
+cc_template skeleton's gradle files on its next touch, or a cc_core
+notifications README note.
+
 Hitch Post's demo-seed device pass (2026-09-05) surfaced zero cc_core
 defects — first fleet app where bring-up + device pass found none.
 
