@@ -80,9 +80,12 @@ local copies on next touch; the watch list below stays open.
 - **`_titleCaseShouted`** (`text/`): shouted-print normalizer duplicated
   in scorecard_parser and visit_page_parser. Trivial; take it along
   with the next text/ touch.
-- **Watch list** (no action yet): `parseCostCents` (Hitch Post) vs
-  Table Encore's receipt cost logic — read TE before claiming a shared
-  money parser; `_StatChip` + a chips-wrap over CountedSubject; the
+- **Watch list**: `parseCostCents` — RESOLVED in cc_core 0.19.0
+  (Back Forty was the second consumer; the TE read settled it — TE's
+  receipt parser wants line items, not totals, and stays domain).
+  parsePageDates moved with it. Hitch Post sheds its local copies on
+  next touch; TE also carries a local titleCaseShouted to shed. Still
+  watching: `_StatChip` + a chips-wrap over CountedSubject; the
   ExportService stamp/write/share shape.
 
 Fleet adoption debts (next touch of each repo):
