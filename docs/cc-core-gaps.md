@@ -156,13 +156,10 @@ notifications-module gradle requirements (above).
 **cc_template**: default ref bump v0.17.0 → v0.19.0; gradle skeleton
 additions for the notifications module (the two Phase G findings).
 
-**Watch list, now RIPE (4 identical consumers — past the rule):**
-- ExportService shape: CL/HP/FP/BF carry the same stamp/temp-write/
-  share scaffolding — extract a shareStampedFile helper (io/); the
-  per-app CSV queries stay domain.
-- restoreBackupFlow UI: the pick-confirm-restore-media-snackbar flow
-  is near-verbatim ×4 — riverpod-free candidate taking the app's
-  restore callback.
+**Watch list — the two ripe items CLOSED in cc_core 0.20.0**
+(shareStampedFile + dateStamp; runRestoreFlow with XFile-based reading
+and the flow's first-ever widget tests). CL/HP/FP/BF shed their copies
+on next touch.
 - Still watching: _StatChip/chips-wrap over CountedSubject;
   PhotoCropper (1 consumer).
 
